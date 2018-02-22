@@ -3,10 +3,8 @@ from django.db import models
 from artist.models import Artist
 
 
-
 def dynamic_album_cover_path(instance, filename):
     return f'album/{instance.title}-{instance.album_id}/album_cover.png'
-
 
 
 class Album(models.Model): # -> 모델을 상속받는 모델 클래스

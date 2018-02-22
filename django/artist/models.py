@@ -1,3 +1,4 @@
+import re
 from django.db import models
 
 
@@ -46,8 +47,12 @@ def dynamic_profile_img_path(instance, filename):
 
     # 방법 5 - pk 대신 melon_id를 사용
 
-    # return f'artist/{instance.melon_id}/{filename}_img.png'
-    return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
+    # return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
+
+    # print(filename)
+    filename = re.search(r'(.*)\.(png|jpg|jpeg|gif)', filename).group(1)
+# print(filename)
+    return f'artist/{instance.name}-{instance.melon_id}/{filename}_img.png'
 
 
 

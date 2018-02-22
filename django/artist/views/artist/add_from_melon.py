@@ -16,7 +16,7 @@ __all__ = (
 def artist_add_from_melon(request):
 
     if request.method == 'POST':
-        print(request.POST)
+        # print(request.POST)
         artist_id = request.POST.get('artist_id')
 
 
@@ -155,6 +155,7 @@ def artist_add_from_melon(request):
 
         file_name = Path(url_img_cover).name
 
+        # print(f'file_name: {file_name}')
 
         # 방법1 - 2/20 수업시간
         # temp_file = BytesIO()

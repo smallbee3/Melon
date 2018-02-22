@@ -70,16 +70,17 @@ def song_add_from_melon(request):
     '''
     if request.method == 'POST':
 
-    # 이것과 마지막에
-    # --------------------------------------
-    #   return redirect('song:song-list')
-    # else:
-    #   return render(request, '405.html', status=405)
-    # --------------------------------------
-    # 이것 할 필요가 없이 한줄로 끝냄
-    # ->
-    # @require_POST
+        """
+        이것과 마지막에
 
+          return redirect('song:song-list')
+        else:
+          return render(request, '405.html', status=405)
+
+        이것 할 필요가 없이 한줄로 끝냄
+        ->
+        @require_POST
+        """
         print(request.POST)
         song_id = request.POST.get('song_id')
 

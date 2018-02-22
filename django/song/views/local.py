@@ -74,9 +74,9 @@ def song_search(request):
      세 변수를 이용해 검색 결과를 3단으로 분리해서 출력
      -> 아티스트로 검색한 노래 결과, 앨범으로 검색한 노래 결과, 제목으로 검색한 노래 결과
     '''
-    print(request.GET)
-    print(type(request.GET))
-    print(request.GET.get('keyword'))
+    # print(request.GET)
+    # print(type(request.GET))
+    # print(request.GET.get('keyword'))
 
     # print(request.GET['keyword'])
     # -> GET방식에서 'keyword'가 없는상태로 접근하면
