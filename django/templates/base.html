@@ -1,5 +1,4 @@
 {% load static %}
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,18 +6,47 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Melon Archive</title>
 
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'css/blog.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/artist-list.css' %}">
+
 
 </head>
 <body>
+<div class="header-wrap">
+    <header class="main-header">
 
-{% block content %}
+        {% if request.user.is_authenticated %}
+            <div>{{ request.user }}로 로그인 중입니다.</div>
+        {% else %}
+            <div><a href="{% url 'login' %}">로그인하세요</a></div>
+        {% endif %}
 
+        <div class="search-container">
+            <a href="">
+                <img src="{% static 'images/logo.png' %}" alt="">
+            </a>
+            <div class="input-container">
+                <input type="text" class="search-input">
+            </div>
+        </div>
+        <nav class="main-header-nav">
+            <ul class="clearfix">
+                <li><a href="{% url 'artist:artist-list' %}">아티스트</a></li>
+                <li><a href="{% url 'album:album-list' %}">앨범</a></li>
+                <li><a href="{% url 'song:song-list' %}">곡</a></li>
+            </ul>
+        </nav>
+    </header>
+</div>
 
-{% endblock %}
-
+<div class="content-block">
+    {% block content %}
+    {% endblock %}
+</div>
 </body>
 </html>

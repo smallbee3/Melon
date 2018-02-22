@@ -19,7 +19,7 @@ from crawler.album import album_detail_crawler
 
 class SongManager(models.Manager):
 
-    def update_or_create_from_melon(self, song_id):
+    def update_or_create_from_melon_id(self, song_id):
 
         import requests
         from bs4 import BeautifulSoup, NavigableString

@@ -65,7 +65,8 @@
 {#        {% include "include/song_search_result.html" with type=item.0 songs=item.1 only %}#}
 
     {% for song_info in song_infos %}
-        {% include "include/song_search_result.html" with types=song_info.types songs=song_info.songs only %}
+
+        {% include "include/song_search_result.html" with type=song_info.type songs=song_info.songs only %}
 
     {%  endfor %}
 

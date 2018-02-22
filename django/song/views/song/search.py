@@ -98,14 +98,14 @@ def song_search(request):
     #     return render(request, 'song/song_search.html')
 
 
-
         # 아래 부분은 4단계에서 'Q'를 사용하면서 필요없어짐
         #############################################
         #Song과 연결된 Artist의 name에 keyword가 포함되는 경우
         # songs_from_artists = Song.objects.filter(
-        #     album__artists__name__contains=keyword
+        #     artists__name__contains=keyword
         # )
         # # context['songs_from_artists'] = songs_from_artists
+        #
         #
         # # Song과 연결된 Album의 title에 keyword가 포함되는 경우
         # songs_from_albums = Song.objects.filter(
@@ -113,23 +113,14 @@ def song_search(request):
         # )
         # # context['songs_from_albums'] = songs_from_albums
         #
+        #
         # # Song의 title에 keyword가 포함되는 경우
         # songs_from_title = Song.objects.filter(
         #     title__contains=keyword
         # )
-        # context['songs_from_title'] = songs_from_title
-        #############################################
+        # # context['songs_from_title'] = songs_from_title
 
-
-        # 0단계 - '리스트'로 시도하다 실패 because of 템플릿언어 리스트
-        #
-        # items = []
-        # items.append([songs_from_artists, '아티스트명'])
-        # items.append([songs_from_albums, '앨범명'])
-        # items.append([songs_from_title, '노래제목'])
-
-
-        # 1단계 - '딕셔너리'로 수업시간 실습
+    # # 1단계 - '딕셔너리'로 수업시간 실습
         # context['song_infos'].append({
         #     'type': '아티스트명',
         #     'songs': songs_from_artists,
@@ -193,12 +184,12 @@ def song_search(request):
             q: Q
 
         song_infos = (
-            SongInfo(
-                # type=123, -> 위의 class형 NamedTuple은
-                #               개발툴에서 디버깅을 할 수 있도록 함.
-                #               에러가 아닌, 워닝을 띄워줌.
-                type='아티스트명',
-                q=Q(album__artists__name__contains=keyword)),
+            # SongInfo(
+            #     # type=123, -> 위의 class형 NamedTuple은
+            #     #               개발툴에서 디버깅을 할 수 있도록 함.
+            #     #               에러가 아닌, 워닝을 띄워줌.
+            #     type='아티스트명',
+            #     q=Q(artists__name__contains=keyword)),
             SongInfo(
                 type='앨범명',
                 q=Q(album__title__contains=keyword)),

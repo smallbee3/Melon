@@ -68,7 +68,7 @@ def song_add_from_melon(request):
         #         'album': album,
         #     }
         # )
-        song, song_created = Song.objects.update_or_create_from_melon(song_id)
+        song, song_created = Song.objects.update_or_create_from_melon_id(song_id)
 
 
         # 2/22 Song model에 artists 추가
