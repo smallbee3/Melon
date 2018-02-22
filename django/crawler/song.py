@@ -23,7 +23,15 @@ def song_list_crawler(q):
         # <a href="javascript:searchLog('web_song','SONG','SO','빨간맛','30512671');melon.play.playSong('26020103',30512671);" class="fc_gray" title="빨간 맛 (Red Flavor)">빨간 맛 (Red Flavor)</a>
         # song_id = re.search(r"searchLog\(.*'(\d+)'\)", tr.select_one('td:nth-of-type(3) a.fc_gray').get('href')).group(1)
         song_id = tr.select_one('td:nth-of-type(1) input[type=checkbox]').get('value')
-        title = tr.select_one('td:nth-of-type(3) a.fc_gray').get_text(strip=True)
+        # title = tr.select_one('td:nth-of-type(3) a.fc_gray').get_text(strip=True)
+
+        # 2/22 수업에서 제목에 회색처리 된 곳 예외처리코드 추가
+        if tr.select_one('td:nth-of-type(3) a.fc_gray'):
+            title = tr.select_one('td:nth-of-type(3) a.fc_gray').get_text(strip=True)
+        else:
+            title = tr.select_one('td:nth-of-type(3) > div > div > span').get_text(strip=True)
+
+
         artist = tr.select_one('td:nth-of-type(4) span.checkEllipsisSongdefaultList').get_text(
             strip=True)
         album = tr.select_one('td:nth-of-type(5) a').get_text(strip=True)
@@ -113,11 +121,22 @@ def song_detail_crawler(song_id):
     # print(f'album_id: {album_id}')
     # print('')
 
+    # 5) melon_id (artist_id) 가져오기 [2/22 수업실습]
+    melon_id_str = div_entry.select_one('div.artist > a').get('href')
+    # print(melon_id_str)
+    melon_id = re.search(".*'(.*)'[)]", melon_id_str).group(1)
+    # print(melon_id)
+
+
     result_dict = {
         'title': title,
         'genre': genre,
         'lyrics': lyrics,
+
         'album_id': album_id,
+
+    # 5) melon_id (artist_id) 가져오기 [2/22 수업실습]
+        'melon_id': melon_id,
     }
 
     return result_dict

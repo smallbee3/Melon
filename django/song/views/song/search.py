@@ -1,31 +1,10 @@
-from collections import namedtuple
 from typing import NamedTuple
+from collections import namedtuple
 
 from django.db.models import Q
-from django.http import HttpResponse
 from django.shortcuts import render
 
-from ..models import Song
-
-
-__all__ = [
-    'song_list',
-    'song_search'
-]
-
-
-def song_list(request):
-
-    songs = Song.objects.all()
-    context = {
-        'songs': songs,
-
-    }
-    return render(
-        request,
-        'song/song_list.html',
-        context,
-    )
+from ...models import Song
 
 
 def song_search(request):
@@ -122,17 +101,17 @@ def song_search(request):
 
         # 아래 부분은 4단계에서 'Q'를 사용하면서 필요없어짐
         #############################################
-        # #Song과 연결된 Artist의 name에 keyword가 포함되는 경우
+        #Song과 연결된 Artist의 name에 keyword가 포함되는 경우
         # songs_from_artists = Song.objects.filter(
         #     album__artists__name__contains=keyword
         # )
-        # context['songs_from_artists'] = songs_from_artists
+        # # context['songs_from_artists'] = songs_from_artists
         #
         # # Song과 연결된 Album의 title에 keyword가 포함되는 경우
         # songs_from_albums = Song.objects.filter(
         #     album__title__contains=keyword
         # )
-        # context['songs_from_albums'] = songs_from_albums
+        # # context['songs_from_albums'] = songs_from_albums
         #
         # # Song의 title에 keyword가 포함되는 경우
         # songs_from_title = Song.objects.filter(

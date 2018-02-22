@@ -16,8 +16,8 @@ class Album(models.Model): # -> 모델을 상속받는 모델 클래스
         upload_to=dynamic_album_cover_path,
         blank=True,
     )
-    artists = models.ManyToManyField(Artist, verbose_name='아티스트 목록')
-    # 수업시간
+    # artists = models.ManyToManyField(Artist, verbose_name='아티스트 목록')
+    # # 수업시간
 
     # song은 Song 클래스에서 다대일(ForeignKey)로 참조
     release_date = models.DateField('발매일', blank=True, null=True)
@@ -29,11 +29,11 @@ class Album(models.Model): # -> 모델을 상속받는 모델 클래스
         return ','.join(self.song_set.values_list('genre', flat=True).distinct())
 
     def __str__(self):
-        # return f'앨범명: {self.title}'
-        return '{title} [{artists}]'.format(
-            title=self.title,
-            artists=', '.join(self.artists.values_list('name', flat=True))
-        )
+        return f'앨범명: {self.title}'
+        # return '{title} [{artists}]'.format(
+        #     title=self.title,
+        #     artists=', '.join(self.artists.values_list('name', flat=True))
+        # )
 
 
 # 얘가 아티스트랑 연결. 하위개념이 앨범, 상위개념이 아티스트

@@ -1,2 +1,1 @@
-from .local import *
-from .melon import *
+from .song import *

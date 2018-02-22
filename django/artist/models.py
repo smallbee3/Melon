@@ -1,4 +1,7 @@
+# import re
 import re
+from datetime import datetime
+
 from django.db import models
 
 
@@ -10,14 +13,11 @@ def dynamic_profile_img_path(instance, filename):
     # 방법1 - instance 사용
     # return f'artist/{instance.name}/profile_img.png'
 
-
     # 방법2 - instance + filename 사용
     # return f'artist/{instance.name}/{filename}'
 
-
     # 방법3 - 확장자 없는게 문제될 수도 있어서
     # return f'artist/{instance.name}/{filename}_img.png'
-
 
     # 방법 4 - 예를 pk값으로 주면 됨.
     # return f'artist/{instance.pk}/{filename}_img.png'
@@ -31,7 +31,6 @@ def dynamic_profile_img_path(instance, filename):
     # (아마 밸리데이션때문에 그런것같은데) 반대로 하면 이상하잖아요.
     # 이상한 파일을 먼저 인스턴스를 만드는게 안되잖아요.
 
-
     # 방법 4-2 - 그런데 우리가 만드는 프로젝트는 이런게 없잖아요.
 
     # pk를 갖기위한 일종의 편법
@@ -44,20 +43,131 @@ def dynamic_profile_img_path(instance, filename):
     # -> validation(유효성 검사) 없이 일단 none으로 만들고 보니까
     #    해당 내용이 중요한 내용일 경우 사용하면 문제가 발생할 수 있음.
 
-
     # 방법 5 - pk 대신 melon_id를 사용
 
     # return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
 
     # print(filename)
-    filename = re.search(r'(.*)\.(png|jpg|jpeg|gif)', filename).group(1)
-# print(filename)
-    return f'artist/{instance.name}-{instance.melon_id}/{filename}_img.png'
+    if filename:
+        filename = re.search(r'(.*)\.(png|jpg|jpeg|gif)', filename).group(1)
+        # print(filename)
+        return f'artist/{instance.name}-{instance.melon_id}/{filename}_img.png'
+    else:
+        return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
 
+
+class ArtistManager(models.Manager):
+
+    def update_or_create_from_melon(self, artist_id):
+
+        ###################### add_from_melon.py ######################
+
+        ################# 크롤러 #################
+        import requests
+        from bs4 import BeautifulSoup
+        url = f'https://www.melon.com/artist/detail.htm'
+        params = {
+            'artistId': artist_id,
+        }
+        response = requests.get(url, params)
+        source = response.text
+        soup = BeautifulSoup(source, 'lxml')
+
+        # name
+        name = soup.select_one('p.title_atist').strong.next_sibling
+
+        # url_img_cover
+        url_img = soup.select_one('span#artistImgArea > img').get('src')
+        url_img_cover = re.search(r'(.*.jpg)', url_img).group(1)
+
+        # real_name, nationality, birth_date, constellation, blood_type
+        personal_information = {}
+        if re.search(r'신상정보</h3>', source, re.DOTALL):
+            dl_list = re.search(r'신상정보</h3>.*?-->(.*?)</dl>', source, re.DOTALL)
+            # dt = re.findall('<dt>.*?</dt>', dl_list.group(1))
+            # dd = re.findall('<dd>.*?</dd>', dl_list.group(1))
+            soup = BeautifulSoup(dl_list.group(), 'lxml')
+            dt = soup.select('dt')
+            dd = soup.select('dd')
+
+            dd_dt = list(zip(dt, dd))
+            # print(dd_dt)
+
+            for i, j in dd_dt:
+                i = i.get_text(strip=True)
+                j = j.get_text(strip=True)
+                personal_information[i] = j
+            # print(self._personal_information)
+        else:
+            personal_information = ''
+        #######################################
+
+        # url_img_cover = artist.url_img_cover
+        real_name = personal_information.get('본명', '')
+        nationality = personal_information.get('국적', '')
+        birth_date_str = personal_information.get('생일', '')
+        constellation = personal_information.get('별자리', '')
+        blood_type = personal_information.get('혈액형', '')
+
+        # 튜플의 리스트를 순회하며 blood_type을 결정
+        for short, full in Artist.CHOICES_BLOOD_TYPE:
+            if blood_type.strip() == full:
+                blood_type = short
+                break
+        else:
+            # break가 발생하지 않은 경우
+            # (미리 정의해놓은 혈액형 타입에 없을 경우)
+            # 기타 혈액형값으로 설정
+            blood_type = Artist.BLOOD_TYPE_OTHER
+
+        # 생년월일 없을 경우
+        if birth_date_str == '':
+            birth_date = None
+        else:
+            birth_date = datetime.strptime(birth_date_str, '%Y.%m.%d')
+
+        ######## Save file to ImageField ########
+        from io import BytesIO
+        from pathlib import Path
+        from django.core.files import File
+        from django.core.files.base import ContentFile
+
+        response = requests.get(url_img_cover)
+        binary_data = response.content
+
+        file_name = Path(url_img_cover).name
+
+        # 4단계 -update_or_create() 사용
+        # artist, created = self.model.objects.update_or_create(
+        artist, artist_created = self.update_or_create(
+            # 이렇게 해도 됨.
+
+            melon_id=artist_id,
+            defaults={
+                'name': name,
+                'real_name': real_name,
+                'nationality': nationality,
+                'birth_date': birth_date,
+                'constellation': constellation,
+                'blood_type': blood_type,
+
+                # 방법 3
+                # 'img_profile': ContentFile(binary_data, name='test.jpg'),
+                #  이런식으로 name에다가 값을 전달해주면 해당 값이 파일명이 됨.
+                'img_profile': ContentFile(binary_data, name=file_name),
+
+                # 방법 4
+                # 'img_profile': img #-> 방법 4 쓴다면
+            }
+        )
+        return artist, artist_created
+        # 여기서 튜플로 전달해주기 때문에 받을 때도 튜플로 받아야함.
+        # 안그러면 잘못된 int가 전달되었다는 500 에러가 발생.
+
+        ###################### add_from_melon.py ######################
 
 
 class Artist(models.Model):
-
     BLOOD_TYPE_A = 'a'
     BLOOD_TYPE_B = 'b'
     BLOOD_TYPE_O = 'o'
@@ -130,23 +240,8 @@ class Artist(models.Model):
         '소개',
         blank=True,
     )
-    # 수업시간
 
-
-    # member = models.CharField(
-    #     '멤버',
-    #     max_length=100,
-    #     blank=True,
-    # )
-    # agency = models.CharField(
-    #     '소속사',
-    #     max_length=50,
-    #     blank=True,
-    #     null=True,
-    # )
-
-
-
+    objects = ArtistManager()
 
     def __str__(self):
         return f'{self.name} {self.birth_date}'

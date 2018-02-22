@@ -7,8 +7,10 @@
             song_id: {{ song.song_id }}<br>
             title: {{ song.title }}<br>
             genre: {{ song.genre }}<br>
-            lyrics: {{ song.lyrics|truncatewords:10 }}<br><br>
-
+            lyrics: {{ song.lyrics|truncatewords:10 }}<br>
+            [2/22 수업]<br>
+            album_id: {{ song.album.album_id }}<br>
+            artist_id: {{ song.album.artists.first.melon_id }}<br><br>
         </li>
         {% endfor %}
     </ul>
