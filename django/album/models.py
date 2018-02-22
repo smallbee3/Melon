@@ -1,10 +1,50 @@
+from datetime import datetime
+
 from django.db import models
 
 from artist.models import Artist
+from crawler.album import album_detail_crawler
 
 
 def dynamic_album_cover_path(instance, filename):
     return f'album/{instance.title}-{instance.album_id}/album_cover.png'
+
+
+class AlbumManager(models.Manager):
+
+    def update_or_create_from_melon(self, album_id):
+        result = album_detail_crawler(album_id)
+
+        album_title = result.get('album_title')
+        album_cover = result.get('album_cover')
+        rel_date = result.get('rel_date')
+
+        album, album_created = self.update_or_create(
+            album_id=album_id,
+            defaults={
+                'title': album_title,
+                'img_cover': album_cover,
+                'release_date': datetime.strptime(rel_date, '%Y.%m.%d'),
+            }
+        )
+        return album, album_created
+
+    def get_or_create_from_melon(self, album_id):
+        result = album_detail_crawler(album_id)
+
+        album_title = result.get('album_title')
+        album_cover = result.get('album_cover')
+        rel_date = result.get('rel_date')
+
+        album, album_created = self.get_or_create(
+            album_id=album_id,
+            defaults={
+                'title': album_title,
+                'img_cover': album_cover,
+                'release_date': datetime.strptime(rel_date, '%Y.%m.%d'),
+            }
+        )
+        return album, album_created
 
 
 class Album(models.Model): # -> 모델을 상속받는 모델 클래스
@@ -35,6 +75,7 @@ class Album(models.Model): # -> 모델을 상속받는 모델 클래스
         #     artists=', '.join(self.artists.values_list('name', flat=True))
         # )
 
+    objects = AlbumManager()
 
 # 얘가 아티스트랑 연결. 하위개념이 앨범, 상위개념이 아티스트
 # 그러면 관계 정의필드에서 하위필드.

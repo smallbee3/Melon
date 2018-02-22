@@ -1,9 +1,3 @@
-from datetime import datetime
-
-import re
-from django.utils import timezone
-
-
 from django.db import models
 
 from album.models import Album
@@ -14,90 +8,47 @@ from artist.models import Artist
 #       - Song
 #       - Song
 #       - Song
-from crawler.album import album_detail_crawler
+from crawler.song import song_detail_crawler
 
 
 class SongManager(models.Manager):
 
     def update_or_create_from_melon_id(self, song_id):
 
-        import requests
-        from bs4 import BeautifulSoup, NavigableString
-        url = f'https://www.melon.com/song/detail.htm'
-        params = {
-            'songId': song_id,
-        }
-        response = requests.get(url, params)
-        source = response.text
-        soup = BeautifulSoup(source, 'lxml')
-
-        # 1) title
-        div_entry = soup.find('div', class_='entry')
-        title = div_entry.find('div', class_='song_name').strong.next_sibling.strip()
-
-        # 2) genre (Description list)
-        dl = div_entry.find('div', class_='meta').find('dl')
-        # isinstance(인스턴스, 클래스(타입))
-        # items = ['앨범', '앨범명', '발매일', '발매일값', '장르', '장르값']
-        items = [item.get_text(strip=True) for item in dl.contents if not isinstance(item, str)]
-        # print(type(items)) -> <class 'list'>
-        # print(items)
-
-        it = iter(items)
-        description_dict = dict(zip(it, it))
-        genre = description_dict.get('장르')
-
-        # 3) lyrics - 첫번째 주석처리와 띄어쓰기 문제해결
-        div_lyrics = soup.find('div', id='d_video_summary')
-
-        if div_lyrics:
-            lyrics_list = []
-            for item in div_lyrics:
-                if item.name == 'br':
-                    lyrics_list.append('\n')
-                elif type(item) is NavigableString:
-                    lyrics_list.append(item.strip())
-            lyrics = ''.join(lyrics_list)
-        else:
-            lyrics = ''
-
-        # 4) album_id - Song을 DB에 저장할 때 Album도 같이 생성해주기 위함.
-        #               참고로 Song은 Album을 ForeignKey로 가짐.
-        p = re.compile(r".*goAlbumDetail[(]'(\d+)'[)]")
-
-        first_dd = dl.find('dd')
-        album_id = p.search(str(first_dd)).group(1)
+        result = song_detail_crawler(song_id)
 
 
-        # # 5) melon_id (artist_id) 가져오기 [2/22 수업실습]
-        # melon_id_str = div_entry.select_one('div.artist > a').get('href')
-        # melon_id = re.search(".*'(.*)'[)]", melon_id_str).group(1)
+        # 1) 아티스트 생성
+        artist_id = result.get('melon_id')
+        artist, artist_created = Artist.objects.update_or_create_from_melon(artist_id)
 
 
+        # 2) 앨범 생성
+        album_id = result.get('album_id')
+        album, _ = Album.objects.get_or_create_from_melon(album_id)
 
-        album_info = album_detail_crawler(album_id)
-        album, created = Album.objects.get_or_create(
-            album_id=album_id,
-            defaults={
-                "title": album_info.get("album_title"),
-                "img_cover": album_info.get('album_cover'),
-                "release_date": datetime.strptime(album_info.get('rel_date'), '%Y.%m.%d')
-            }
-        )
 
+        # 3) 음악 생성
+        title = result.get('title')
+        genre = result.get('genre')
+        lyrics = result.get('lyrics')
         song, song_created = self.update_or_create(
             song_id=song_id,
             defaults={
                 'title': title,
                 'genre': genre,
                 'lyrics': lyrics,
+
+        # 4) 음악에 앨범 연결
                 'album': album,
             }
         )
 
-        return song, song_created
+        # 5) 음악에 아티스트 연결
+        song.artists.add(artist)
 
-
+        # return song, song_created
+        # 여기서 return을 할 필요가 없어짐.
 
 
 class Song(models.Model):
@@ -115,24 +66,22 @@ class Song(models.Model):
     # 보통 중간자모델이 아래에 있어서 ''string으로 해주는 것.
 
 
-    # 2/22
+    # 2/22 수업 중에 모델 형태를 같이 변경함.
     artists = models.ManyToManyField(
         Artist,
         verbose_name='아티스트 목록',
         blank=True,
+        # Song <-> Artist는 MTM관계이고 CASCADE가 설정 안되어있으므로
+        # Album이 지워질 때 Song은 지워지지만 (Song이 지워질때 Album은 지워지지만 X)
+        # artist는 남아음
     )
-
     # 아래 프로퍼티 겹쳐서 없애야함
-
-
-
 
     title = models.CharField('곡 제목', max_length=100)
 
     genre = models.CharField('장르', max_length=100, blank=True)
 
     lyrics = models.TextField('가사', blank=True)
-
 
 
     # @property
@@ -151,12 +100,6 @@ class Song(models.Model):
 
         # 2017.01.15
         # return self.album.release_date
-
-    # 이전에 사용했던 방식.
-    # datetime.strftime(
-    #     # timezone.make_naive(self.created_date),
-    #     timezone.localtime(self.created_date),
-    #     '%Y.%m.%d'),
 
 
 

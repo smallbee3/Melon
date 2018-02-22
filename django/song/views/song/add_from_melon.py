@@ -19,7 +19,7 @@ def song_add_from_melon(request):
     '''
     if request.method == 'POST':
 
-        """
+        """ 
         이것과 마지막에
 
           return redirect('song:song-list')
@@ -50,13 +50,13 @@ def song_add_from_melon(request):
         #     }
         # )
 
-        artist_id = result.get('melon_id')
+        # artist_id = result.get('melon_id')
         # 2/22 이곳에 크롤링을 포함한 Artist 생성 코드 전부를 복사했다가
         # artist/models.py에서 ArtistManager를 커스터마이징해서 간단하게 코드정리
         #
         # artist = Artist.objects.update_or_create_from_melon(artist_id)
         # -> 이렇게 했다가 artist에 return되는 튜플이 저장되어서 아래에서 에러 발생.
-        artist, artist_created = Artist.objects.update_or_create_from_melon(artist_id)
+        # artist, artist_created = Artist.objects.update_or_create_from_melon(artist_id)
 
 
         # song, created = Song.objects.update_or_create(
@@ -68,11 +68,14 @@ def song_add_from_melon(request):
         #         'album': album,
         #     }
         # )
-        song, song_created = Song.objects.update_or_create_from_melon_id(song_id)
+        # song, song_created = Song.objects.update_or_create_from_melon_id(song_id)
+        # 매니저로 호출하면서 아래 song.artists.add(artist)도 빼면서 여기서 song, song_creataed
+        # 할 필요가 없어짐.
 
+        Song.objects.update_or_create_from_melon_id(song_id)
 
         # 2/22 Song model에 artists 추가
-        song.artists.add(artist)
+        # song.artists.add(artist)
 
         return redirect('song:song-list')
     else:

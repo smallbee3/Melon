@@ -123,9 +123,7 @@ def song_detail_crawler(song_id):
 
     # 5) melon_id (artist_id) 가져오기 [2/22 수업실습]
     melon_id_str = div_entry.select_one('div.artist > a').get('href')
-    # print(melon_id_str)
     melon_id = re.search(".*'(.*)'[)]", melon_id_str).group(1)
-    # print(melon_id)
 
 
     result_dict = {
