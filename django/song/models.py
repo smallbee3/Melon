@@ -11,10 +11,18 @@ from artist.models import Artist
 from crawler.song import song_detail_crawler
 
 
+# 2/22 목요일 폭풍과제 - Album 사진 저장, Album manager 구현
 class SongManager(models.Manager):
 
     def update_or_create_from_melon_id(self, song_id):
-
+        """
+        song_id에 해당하는 Song정보를 멜론사이트에서 가져와 update_or_create를 실행
+        이 때, 해당 Song의 Artist정보도 가져와 ArtistManager.update_or_create_from_melon도 실행
+         그리고 해당 Song의 Album정보도 가져와서 AlbumManager.update_or_create_from_melon도 실행
+            -> Album의 커버이미지도 저장해야 함
+        :param song_id: 멜론 사이트에서의 곡 고유 ID
+        :return: (Song instance, Bool(Song created))
+        """
         result = song_detail_crawler(song_id)
 
 
@@ -46,6 +54,8 @@ class SongManager(models.Manager):
 
         # 5) 음악에 아티스트 연결
         song.artists.add(artist)
+        # 생성된 Song의 artists필드(MTM)에 연결된 Artist를 추가
+
 
         # return song, song_created
         # 여기서 return을 할 필요가 없어짐.
@@ -73,17 +83,22 @@ class Song(models.Model):
         blank=True,
         # Song <-> Artist는 MTM관계이고 CASCADE가 설정 안되어있으므로
         # Album이 지워질 때 Song은 지워지지만 (Song이 지워질때 Album은 지워지지만 X)
-        # artist는 남아음
+        # artist는 남아있음.
     )
-    # 아래 프로퍼티 겹쳐서 없애야함
+    title = models.CharField(
+        '곡 제목',
+        max_length=100,
+    )
+    genre = models.CharField(
+        '장르',
+        max_length=100,
+    )
+    lyrics = models.TextField(
+        '가사',
+        blank=True,
+    )
 
-    title = models.CharField('곡 제목', max_length=100)
-
-    genre = models.CharField('장르', max_length=100, blank=True)
-
-    lyrics = models.TextField('가사', blank=True)
-
-
+    # 위에 변경한 artists와 프로퍼티 겹쳐서 없애야함
     # @property
     # def artists(self):
     #     # self.album에 속한 전체 Artist의 QuerySet리턴

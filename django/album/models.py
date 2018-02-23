@@ -69,11 +69,11 @@ class Album(models.Model): # -> 모델을 상속받는 모델 클래스
         return ','.join(self.song_set.values_list('genre', flat=True).distinct())
 
     def __str__(self):
-        return f'앨범명: {self.title}'
         # return '{title} [{artists}]'.format(
         #     title=self.title,
         #     artists=', '.join(self.artists.values_list('name', flat=True))
         # )
+        return f'앨범명: {self.title}'
 
     objects = AlbumManager()
 

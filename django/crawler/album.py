@@ -16,7 +16,7 @@ def album_detail_crawler(album_id):
     # 앨범 제목
     album_title = soup.find('div', class_="song_name").strong.next_sibling.strip()
 
-    # 앨범 사진 - 이곳에서 바로 저장
+    # 앨범 사진
     album_cover_url = soup.find('a', id="d_album_org").img.get('src')
     binary_data = requests.get(album_cover_url).content
     album_cover = ContentFile(binary_data, name="album_cover.png")

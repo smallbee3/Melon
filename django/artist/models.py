@@ -59,7 +59,7 @@ class ArtistManager(models.Manager):
 
     def update_or_create_from_melon(self, artist_id):
 
-        ###################### add_from_melon.py ######################
+###################### add_from_melon.py ######################
 
         ################# 크롤러 #################
         import requests
@@ -111,6 +111,7 @@ class ArtistManager(models.Manager):
         constellation = personal_information.get('별자리', '')
         blood_type = personal_information.get('혈액형', '')
 
+        # 예외처리 1 -
         # 튜플의 리스트를 순회하며 blood_type을 결정
         for short, full in Artist.CHOICES_BLOOD_TYPE:
             if blood_type.strip() == full:
@@ -122,11 +123,14 @@ class ArtistManager(models.Manager):
             # 기타 혈액형값으로 설정
             blood_type = Artist.BLOOD_TYPE_OTHER
 
-        # 생년월일 없을 경우
-        if birth_date_str == '':
-            birth_date = None
-        else:
-            birth_date = datetime.strptime(birth_date_str, '%Y.%m.%d')
+        # # 예외처리 2 - 생년월일 없을 경우
+        # if birth_date_str == '':
+        #     birth_date = None
+        # else:
+        #     birth_date = datetime.strptime(birth_date_str, '%Y.%m.%d')
+
+        # 예외처리 2-2 - 위의 4줄을 한 줄로 줄임
+        # datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else None,
 
 
 
@@ -192,20 +196,30 @@ class ArtistManager(models.Manager):
         from django.core.files.base import ContentFile
 
         response = requests.get(url_img_cover)
+
         binary_data = response.content
-
+# img_profile필드에 저장할 파일명을 전체 URL경로에서 추출 (Path라이브러리)
         file_name = Path(url_img_cover).name
-
         # print(f'file_name: {file_name}')
 
+
         # 방법1 - 2/20 수업시간
+# 파일처럼 취급되는 메모리 객체 temp_file를 생성
         # temp_file = BytesIO()
+
+# temp_file에 이진데이터를 기록
         # temp_file.write(binary_data)
+
+# 파일객체의 포인터를 시작부분으로 되돌림
         # temp_file.seek(0)
 
+# artist.img_profile필드의 save를 따로 호출, 이름과 File객체를 전달
+# (Django)File객체의 생성에는 (Python)File객체를 사용,
+# 이때 (Python)File객체처럼 취급되는 BytesIO를 사용
         # artist.img_profile.save(file_name, File(temp_file))
-        # -> update_or_create에서 반환된 obj인 'artist'를 활용하기 때문에
-        #    이 방법1 을 실행하려면 아래쪽으로 이동시킬 것.
+
+# -> update_or_create에서 반환된 obj인 'artist'를 활용하기 때문에
+#    이 방법1 을 실행하려면 아래쪽으로 이동시킬 것.
 
 
         # 방법2 - ContentFile이용 by che1
@@ -230,13 +244,23 @@ class ArtistManager(models.Manager):
 
 
         # 4단계 -update_or_create() 사용
-        artist, artist_created = Artist.objects.update_or_create(
+        # 1)
+        # artist, artist_created = Artist.objects.update_or_create(
+        # 2) self.model이라는 이름으로 자신의 클래스에 접근가능
+        # artist, artist_created = self.model.update_or_create(
+        # 3) objects라는 것 자체가 매니저 객체였으니까 매니저 객체에 있는
+        #    이 update_or_create를 그대로 실행하면 되는 거죠.
+        #   (밖으로 나갔다가 다시 들어올 필요없이)
+        artist, artist_created = self.update_or_create(
+
             melon_id=artist_id,
             defaults={
                 'name': name,
                 'real_name': real_name,
                 'nationality': nationality,
-                'birth_date': birth_date,
+                # 'birth_date': birth_date,
+                # 위의 예외처리 4줄 대신 '조건표현식' 한줄로 Pythonic하게!
+                'birth_date': datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else '',
                 'constellation': constellation,
                 'blood_type': blood_type,
 

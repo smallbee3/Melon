@@ -68,6 +68,13 @@ def song_detail_crawler(song_id):
     # 1) title
     div_entry = soup.find('div', class_='entry')
     title = div_entry.find('div', class_='song_name').strong.next_sibling.strip()
+    # div.song_name의 자식 strong요소의 바로 다음 형제요소의 값을 양쪽 여백을 모두 잘라낸다
+    # 아래의 HTML과 같은 구조
+    # <div class="song_name">
+    #  |<strong>곡명</strong>
+    #  |
+    #  |            Heart Shaker
+    # </div>
 
     # 2) genre (Description list)
     dl = div_entry.find('div', class_='meta').find('dl')
@@ -131,9 +138,10 @@ def song_detail_crawler(song_id):
         'genre': genre,
         'lyrics': lyrics,
 
+    # 4) album_id - [2/21 보충꿀수업 실습]
         'album_id': album_id,
 
-    # 5) melon_id (artist_id) 가져오기 [2/22 수업실습]
+    # 5) melon_id -  (artist_id) 가져오기 [2/22 수업실습]
         'melon_id': melon_id,
     }
 
