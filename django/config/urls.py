@@ -19,12 +19,14 @@ from django.urls import path, include
 from django.conf import settings
 
 from config import views
-from members.views import login_view
+from members.views import login_view, logout_view, signup_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('signup/', signup_view, name='signup'),
 
     path('artist/', include('artist.urls')),
     path('song/', include('song.urls')),
