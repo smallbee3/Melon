@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
     <link rel="stylesheet" href="{% static 'css/artist-list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
 
 
 </head>
@@ -36,8 +37,8 @@
         </div>
         <nav class="main-header-nav">
             <ul class="clearfix">
-              <!-- header.css에서 li들에 float속성을 줘서 가로로 정렬했기 때문에 -->
-              <!-- 여기서 clearfix를 주는 것 -->
+                <!-- header.css에서 li들에 float속성을 줘서 가로로 정렬했기 때문에 -->
+                <!-- 여기서 clearfix를 주는 것 -->
                 <li><a href="{% url 'artist:artist-list' %}">아티스트</a></li>
                 <li><a href="{% url 'album:album-list' %}">앨범</a></li>
                 <li><a href="{% url 'song:song-list' %}">곡</a></li>
