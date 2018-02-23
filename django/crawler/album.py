@@ -20,6 +20,10 @@ def album_detail_crawler(album_id):
     album_cover_url = soup.find('a', id="d_album_org").img.get('src')
     binary_data = requests.get(album_cover_url).content
     album_cover = ContentFile(binary_data, name="album_cover.png")
+    print('')
+    print(album_cover_url)
+    print('')
+
 
     # 앨범 발매일
     meta = soup.find('dl', class_="list")

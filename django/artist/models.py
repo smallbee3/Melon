@@ -5,6 +5,9 @@ from django.db import models
 
 
 # 밖에 있는 이유는 클래스 안에 넣어도 상관은 없기도 하고.
+from utils.file import download, get_buffer_ext
+
+
 def dynamic_profile_img_path(instance, filename):
     # return을 원하는 디렉토리 네임.
     # 인스턴스랑 파일네임을 받도록 하고, 인스턴스는 저장하는 파일 객체,
@@ -48,9 +51,11 @@ def dynamic_profile_img_path(instance, filename):
 
     # print(filename)
     if filename:
-        filename = re.search(r'(.*)\.(png|jpg|jpeg|gif)', filename).group(1)
+        # filename = re.search(r'(.*)\.(png|jpg|jpeg|gif)', filename).group(1)
         # print(filename)
-        return f'artist/{instance.name}-{instance.melon_id}/{filename}_img.png'
+        # return f'artist/{instance.name}-{instance.melon_id}/{filename}_img.png'
+        return f'artist/{instance.name}-{instance.melon_id}/{filename}'
+
     else:
         return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
 
@@ -123,11 +128,11 @@ class ArtistManager(models.Manager):
             # 기타 혈액형값으로 설정
             blood_type = Artist.BLOOD_TYPE_OTHER
 
-        # # 예외처리 2 - 생년월일 없을 경우
-        # if birth_date_str == '':
-        #     birth_date = None
-        # else:
-        #     birth_date = datetime.strptime(birth_date_str, '%Y.%m.%d')
+        # 예외처리 2 - 생년월일 없을 경우
+        if birth_date_str == '':
+            birth_date = None
+        else:
+            birth_date = datetime.strptime(birth_date_str, '%Y.%m.%d')
 
         # 예외처리 2-2 - 위의 4줄을 한 줄로 줄임
         # datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else None,
@@ -195,23 +200,24 @@ class ArtistManager(models.Manager):
         from django.core.files import File
         from django.core.files.base import ContentFile
 
-        response = requests.get(url_img_cover)
+        # response = requests.get(url_img_cover)
 
-        binary_data = response.content
+        # binary_data = response.content
 # img_profile필드에 저장할 파일명을 전체 URL경로에서 추출 (Path라이브러리)
-        file_name = Path(url_img_cover).name
+#         file_name = Path(url_img_cover).name
         # print(f'file_name: {file_name}')
+
 
 
         # 방법1 - 2/20 수업시간
 # 파일처럼 취급되는 메모리 객체 temp_file를 생성
-        # temp_file = BytesIO()
+#         temp_file = BytesIO()
 
 # temp_file에 이진데이터를 기록
-        # temp_file.write(binary_data)
+#         temp_file.write(binary_data)
 
 # 파일객체의 포인터를 시작부분으로 되돌림
-        # temp_file.seek(0)
+#         temp_file.seek(0)
 
 # artist.img_profile필드의 save를 따로 호출, 이름과 File객체를 전달
 # (Django)File객체의 생성에는 (Python)File객체를 사용,
@@ -220,6 +226,9 @@ class ArtistManager(models.Manager):
 
 # -> update_or_create에서 반환된 obj인 'artist'를 활용하기 때문에
 #    이 방법1 을 실행하려면 아래쪽으로 이동시킬 것.
+
+
+
 
 
         # 방법2 - ContentFile이용 by che1
@@ -258,21 +267,42 @@ class ArtistManager(models.Manager):
                 'name': name,
                 'real_name': real_name,
                 'nationality': nationality,
-                # 'birth_date': birth_date,
+                'birth_date': birth_date,
                 # 위의 예외처리 4줄 대신 '조건표현식' 한줄로 Pythonic하게!
-                'birth_date': datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else '',
+                # 'birth_date': datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else '',
                 'constellation': constellation,
                 'blood_type': blood_type,
 
                 # 방법 3
                 # 'img_profile': ContentFile(binary_data, name='test.jpg'),
                 #  이런식으로 name에다가 값을 전달해주면 해당 값이 파일명이 됨.
-                'img_profile': ContentFile(binary_data, name=file_name),
+                # 'img_profile': ContentFile(binary_data, name=file_name),
 
                 # 방법 4
                 # 'img_profile': img #-> 방법 4 쓴다면
             }
         )
+
+        # 2/23
+        # import magic
+        #
+        # mime_type = magic.from_buffer(temp_file.read(), mime=True)
+        # file_name = '{artist_id}.{ext}'.format(
+        #     artist_id=artist_id,
+        #     ext=mime_type.split('/')[-1]
+        # )
+
+        # 위 코드를 utils/file.py로 분리함
+        # 전달인자로 url과 artist_id를 전달함 (원래 두번째 인자는 artist_id는 아님)
+        # file_name, temp_file = download(url_img_cover, artist_id)
+
+        temp_file = download(url_img_cover)
+        file_name = '{artist_id}.{ext}'.format(
+            artist_id=artist_id,
+            ext=get_buffer_ext(temp_file),
+        )
+        artist.img_profile.save(file_name, File(temp_file))
+
         return artist, artist_created
         # 여기서 튜플로 전달해주기 때문에 받을 때도 튜플로 받아야함.
         # 안그러면 잘못된 int가 전달되었다는 500 에러가 발생.
