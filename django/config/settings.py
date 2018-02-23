@@ -63,6 +63,8 @@ ALLOWED_HOSTS = []
 # 특정 도메인에서 드러왔을 때만 장고 앱이 실행되게 하는 것.
 # locul host -> 개발할 때 로컬호스트만 하니까.
 
+AUTH_USER_MODEL = 'members.User'
+
 
 # Application definition
 
@@ -82,7 +84,7 @@ INSTALLED_APPS = [
     'album',
     'artist',
     'song',
-    # 'members',
+    'members',
 ]
 
 MIDDLEWARE = [
@@ -123,8 +125,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'fc-melon',
+        'USER': 'smallbee3',
+        'PASSWORD': 'asdf',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

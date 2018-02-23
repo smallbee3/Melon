@@ -301,7 +301,13 @@ class ArtistManager(models.Manager):
             artist_id=artist_id,
             ext=get_buffer_ext(temp_file),
         )
+
+        if artist.img_profile:
+            artist.img_profile.delete()
         artist.img_profile.save(file_name, File(temp_file))
+
+        # if not artist.img_profile:
+        #     artist.img_profile.save(file_name, File(temp_file))
 
         return artist, artist_created
         # 여기서 튜플로 전달해주기 때문에 받을 때도 튜플로 받아야함.
