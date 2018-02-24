@@ -49,15 +49,15 @@ def dynamic_profile_img_path(instance, filename):
 
     # return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
 
-    # print(filename)
-    if filename:
-        # filename = re.search(r'(.*)\.(png|jpg|jpeg|gif)', filename).group(1)
-        # print(filename)
-        # return f'artist/{instance.name}-{instance.melon_id}/{filename}_img.png'
-        return f'artist/{instance.name}-{instance.melon_id}/{filename}'
+    # 정규표현식으로 원본 파일명에서 확장자를 떼는 코드인데
+    # 원래 확장명을 버리고 .png로 통일하는게 꼭 필요하지 않은이상
+    # 이상적인 코드라고 보기 힘듦.
+    # filename = re.search(r'(.*)\.(png|jpg|jpeg|gif)', filename).group(1)
+    # return f'artist/{instance.name}-{instance.melon_id}/{filename}_img.png'
 
-    else:
-        return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
+    return f'artist/{instance.name}-{instance.melon_id}/{filename}'
+
+    # return f'artist/{instance.name}-{instance.melon_id}/profile_img.png'
 
 
 class ArtistManager(models.Manager):
@@ -116,7 +116,7 @@ class ArtistManager(models.Manager):
         constellation = personal_information.get('별자리', '')
         blood_type = personal_information.get('혈액형', '')
 
-        # 예외처리 1 -
+        # 예외처리 1
         # 튜플의 리스트를 순회하며 blood_type을 결정
         for short, full in Artist.CHOICES_BLOOD_TYPE:
             if blood_type.strip() == full:
@@ -129,10 +129,10 @@ class ArtistManager(models.Manager):
             blood_type = Artist.BLOOD_TYPE_OTHER
 
         # 예외처리 2 - 생년월일 없을 경우
-        if birth_date_str == '':
-            birth_date = None
-        else:
-            birth_date = datetime.strptime(birth_date_str, '%Y.%m.%d')
+        # if birth_date_str == '':
+        #     birth_date = None
+        # else:
+        #     birth_date = datetime.strptime(birth_date_str, '%Y.%m.%d')
 
         # 예외처리 2-2 - 위의 4줄을 한 줄로 줄임
         # datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else None,
@@ -267,9 +267,9 @@ class ArtistManager(models.Manager):
                 'name': name,
                 'real_name': real_name,
                 'nationality': nationality,
-                'birth_date': birth_date,
+                # 'birth_date': birth_date,
                 # 위의 예외처리 4줄 대신 '조건표현식' 한줄로 Pythonic하게!
-                # 'birth_date': datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else '',
+                'birth_date': datetime.strptime(birth_date_str, '%Y.%m.%d') if birth_date_str else None,
                 'constellation': constellation,
                 'blood_type': blood_type,
 
@@ -296,16 +296,23 @@ class ArtistManager(models.Manager):
         # 전달인자로 url과 artist_id를 전달함 (원래 두번째 인자는 artist_id는 아님)
         # file_name, temp_file = download(url_img_cover, artist_id)
 
+# img_profile필드에 저장할 파일확장자를 바이너리 데이터 자체의 MIME_TYPE에서 가져옴
+# 파일명은 artist_id를 사용
         temp_file = download(url_img_cover)
         file_name = '{artist_id}.{ext}'.format(
             artist_id=artist_id,
             ext=get_buffer_ext(temp_file),
         )
 
+
+        # 2/23 - 사진 중복저장 방지 코드
+        #       : 해당필드에 사진이 있는지 확인
+        # 방법1 - 지우고 다시 만들기
         if artist.img_profile:
             artist.img_profile.delete()
         artist.img_profile.save(file_name, File(temp_file))
 
+        # 방법2 - 있을경우 안만들기
         # if not artist.img_profile:
         #     artist.img_profile.save(file_name, File(temp_file))
 

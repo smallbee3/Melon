@@ -1,13 +1,16 @@
 from datetime import datetime
 
+from django.core.files import File
 from django.db import models
 
 from artist.models import Artist
 from crawler.album import album_detail_crawler
+from utils.file import get_buffer_ext, download
 
 
 def dynamic_album_cover_path(instance, filename):
-    return f'album/{instance.title}-{instance.album_id}/album_cover.png'
+    # return f'album/{instance.title}-{instance.album_id}/album_cover.png'
+    return f'album/{instance.title}-{instance.album_id}/{filename}'
 
 
 class AlbumManager(models.Manager):
@@ -16,35 +19,49 @@ class AlbumManager(models.Manager):
         result = album_detail_crawler(album_id)
 
         album_title = result.get('album_title')
-        album_cover = result.get('album_cover')
+        # album_cover = result.get('album_cover')
+        album_cover_url = result.get('album_cover_url')
         rel_date = result.get('rel_date')
 
         album, album_created = self.update_or_create(
             album_id=album_id,
             defaults={
                 'title': album_title,
-                'img_cover': album_cover,
+                # 'img_cover': album_cover,
                 'release_date': datetime.strptime(rel_date, '%Y.%m.%d'),
             }
         )
-        return album, album_created
 
-    def get_or_create_from_melon(self, album_id):
-        result = album_detail_crawler(album_id)
-
-        album_title = result.get('album_title')
-        album_cover = result.get('album_cover')
-        rel_date = result.get('rel_date')
-
-        album, album_created = self.get_or_create(
+        temp_file = download(album_cover_url)
+        file_name = '{album_id}.{ext}'.format(
             album_id=album_id,
-            defaults={
-                'title': album_title,
-                'img_cover': album_cover,
-                'release_date': datetime.strptime(rel_date, '%Y.%m.%d'),
-            }
+            ext=get_buffer_ext(temp_file),
         )
+        # 방법1 - 지우고 다시 만들기
+        if album.img_cover:
+            album.img_cover.delete()
+        album.img_cover.save(file_name, File(temp_file))
+
+
+
         return album, album_created
+
+    # def get_or_create_from_melon(self, album_id):
+    #     result = album_detail_crawler(album_id)
+    #
+    #     album_title = result.get('album_title')
+    #     album_cover = result.get('album_cover')
+    #     rel_date = result.get('rel_date')
+    #
+    #     album, album_created = self.get_or_create(
+    #         album_id=album_id,
+    #         defaults={
+    #             'title': album_title,
+    #             'img_cover': album_cover,
+    #             'release_date': datetime.strptime(rel_date, '%Y.%m.%d'),
+    #         }
+    #     )
+    #     return album, album_created
 
 
 class Album(models.Model): # -> 모델을 상속받는 모델 클래스

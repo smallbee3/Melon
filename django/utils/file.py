@@ -35,6 +35,7 @@ import magic
 #     return file_name, temp_file
 
 
+# -> url로부터 다운받은 데이터를 ByteIO객체에 쓰고 리턴
 def download(url):
 
     response = requests.get(url)
@@ -53,7 +54,7 @@ def download(url):
     # 파일객체의 포인터를 시작부분으로 되돌림
     temp_file.seek(0)
 
-    # 2/23
+    # 아래 과정은 이곳이 아니라 album/models.py의 ArtistManager에서 실행
     # mime_type = magic.from_buffer(temp_file.read(), mime=True)
     # file_name = '{artist_id}.{ext}'.format(
     #     artist_id=filename,
@@ -61,10 +62,10 @@ def download(url):
     # )
     # artist.img_profile.save(file_name, File(temp_file))
 
-    # return file_name, temp_file
     return temp_file
 
 
+# -> ByteIO객체로부터 확장자를 알아내 리턴
 def get_buffer_ext(buffer):
     buffer.seek(0)
     mime_info = magic.from_buffer(buffer.read(), mime=True)

@@ -18,11 +18,9 @@ def album_detail_crawler(album_id):
 
     # 앨범 사진
     album_cover_url = soup.find('a', id="d_album_org").img.get('src')
-    binary_data = requests.get(album_cover_url).content
-    album_cover = ContentFile(binary_data, name="album_cover.png")
-    print('')
-    print(album_cover_url)
-    print('')
+
+    # binary_data = requests.get(album_cover_url).content
+    # album_cover = ContentFile(binary_data, name="album_cover.png")
 
 
     # 앨범 발매일
@@ -31,7 +29,8 @@ def album_detail_crawler(album_id):
 
     result_dict = {
         'album_title': album_title,
-        'album_cover': album_cover,
+        # 'album_cover': album_cover,
+        'album_cover_url': album_cover_url,
         'rel_date': rel_date,
     }
     return result_dict

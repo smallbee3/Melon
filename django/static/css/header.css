@@ -28,6 +28,14 @@ header.main-header > .search-container > .input-container > input {
   padding-left: 0;
 }
 
+header.main-header > nav.main-header-nav {
+  float: left;
+}
+
+header.main-header > nav.main-header-nav.nav-right {
+  float: right;
+}
+
 header.main-header > nav.main-header-nav > ul > li {
   float: left;
 }

@@ -1,3 +1,5 @@
+$color-btn: #00cd3c;
+
 html, body {
   margin: 0;
   padding: 0;
@@ -26,4 +28,11 @@ a {
   height: 0;
   clear: both;
   display: block;
+}
+.btn {
+  background-color: $color-btn;
+  font-size: 20px;
+  padding: 17px 40px;
+  border: none;
+  color: white;
 }

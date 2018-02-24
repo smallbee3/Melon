@@ -63,6 +63,8 @@ ALLOWED_HOSTS = []
 # 특정 도메인에서 드러왔을 때만 장고 앱이 실행되게 하는 것.
 # locul host -> 개발할 때 로컬호스트만 하니까.
 
+
+# 02/23 Melon 23 Customizing User2
 AUTH_USER_MODEL = 'members.User'
 
 

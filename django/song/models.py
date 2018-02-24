@@ -33,7 +33,7 @@ class SongManager(models.Manager):
 
         # 2) 앨범 생성
         album_id = result.get('album_id')
-        album, _ = Album.objects.get_or_create_from_melon(album_id)
+        album, _ = Album.objects.update_or_create_from_melon(album_id)
 
 
         # 3) 음악 생성
