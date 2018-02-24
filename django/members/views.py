@@ -38,6 +38,7 @@ def login_view(request):
     #         return redirect('index')
     # return render(request, 'members/login.html')
 
+    # 2/24 로그인 뷰 form으로 구현해보기
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
