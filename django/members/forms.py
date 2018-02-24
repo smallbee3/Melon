@@ -52,3 +52,13 @@ class SignupForm(forms.Form):
             raise ValidationError('비밀번호와 비밀번호 확인란의 값이 다릅니다.')
         return password
         # 리턴 안해주면 해당 필드에서 cleaned_data 꺼내올 때 에러가 발생함.
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        label='아이디',
+    )
+    password = forms.CharField(
+        label='비밀번호',
+        widget=forms.PasswordInput
+    )
