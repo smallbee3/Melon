@@ -99,7 +99,7 @@ def logout_view(request):
 #         #     return redirect('index')
 #
 #
-#         # 3) 아이디와 비밀번호 validation을 모두 하고 싶을 때 구조
+#         # 2) 아이디와 비밀번호 validation을 모두 하고 싶을 때 구조
 #         is_valid = True
 #         if User.objects.filter(username=username).exists():
 #             context['errors'].append('Username already exists')
@@ -118,7 +118,7 @@ def logout_view(request):
 
 
 
-# 4)    2/23 폼 관련 첫 실습 - Signup 폼으로 만들어보기
+# 3)    2/23 폼 관련 첫 실습 - Signup 폼으로 만들어보기
 
 #       1) 실습 a
 #       SignupForm 인스턴스를 생성
@@ -172,6 +172,7 @@ def signup_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+
             return redirect('index')
 
     else:
@@ -180,8 +181,16 @@ def signup_view(request):
         # 반대로 validation을 거치지 못한 POST요청의 경우 위에서 넣어준
         #       SignupForm(request.POST)가 계속 유효하기 때문에
         #       입력한 데이터가 아래 context에 전달되서 signup 화면에 다시 렌더링됨.
+
+    # parent_tempalte = get_template('base.html')
+    # print(type(parent_tempalte))
+
     context = {
         'signup_form': form,
+
+        # 동적으로 템플릿을 전달할 때
+        # 'parent': 'base.html',
+        'parent': parent_tempalte,
     }
     return render(request, 'members/signup.html', context)
 

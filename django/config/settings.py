@@ -58,7 +58,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 # ALLOWED_HOSTS = ['*']
-# ALLOWED_HOSTS = ['locul host']
+# ALLOWED_HOSTS = ['local host']
 
 # 특정 도메인에서 드러왔을 때만 장고 앱이 실행되게 하는 것.
 # locul host -> 개발할 때 로컬호스트만 하니까.

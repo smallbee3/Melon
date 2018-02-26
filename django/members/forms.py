@@ -16,7 +16,7 @@ class SignupForm(forms.Form):
         # required=False
 
         # css를 주면 클래스를 지정해주어야함.
-        # widget=forms.TextInput(
+        # widget=forms.TexttInput(
         #     attrs={
         #         'class': ...
         #     }
