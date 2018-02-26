@@ -85,8 +85,10 @@ def artist_add(request):
         form = AritstForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-
             # -> 아티스트 객체를 저장.
+            #    굳이 풀어서 하자면 아래처럼
+            #    cleaned_data에서 꺼내서
+            #    Artist.objects.create하는 과정이됨
 
             # # melon_id = form.cleaned_data['melon_id']
             # img_profile = form.cleaned_data['img_profile']

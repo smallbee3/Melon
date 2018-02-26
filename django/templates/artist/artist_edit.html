@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1><a href="{% url 'artist:artist-edit' artist_pk=artist_pk %}">직접 아티스트수정</a></h1>
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in artist_form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+{#                field.label은 forms.py가 아니라 model의 verbose_name에서 가져온 것. #}
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        {{ error }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">수정</button>
+    </form>
+
+{% endblock %}
