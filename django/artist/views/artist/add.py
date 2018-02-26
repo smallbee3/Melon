@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.shortcuts import redirect, render
 
+from ...forms import AritstForm
 from ...models import Artist
 
 
@@ -49,31 +50,72 @@ __all__ = (
     #     return render(request, 'artist/artist_add.html')
 
 
+# def artist_add(request):
+#     if request.method == 'POST':
+#
+#         # return HttpResponse(name)
+#         name = request.POST['name']
+#         real_name = request.POST['real_name']
+#         nationality = request.POST['nationality']
+#         constellation = request.POST['constellation']
+#         blood_type = request.POST['blood_type']
+#         intro = request.POST['intro']
+#
+#         if request.POST['birth_date']:
+#             birthday_text = request.POST['birth_date']
+#             birth_date = datetime.strptime(birthday_text, '%Y-%m-%d')
+#         else:
+#             birth_date = None
+#         Artist.objects.create(
+#             name=name,
+#             real_name=real_name,
+#             nationality=nationality,
+#             birth_date=birth_date,
+#             constellation=constellation,
+#             blood_type=blood_type,
+#         )
+#         return redirect('artist:artist-list')
+#     else:
+#         return render(request, 'artist/artist_add.html')
+
 def artist_add(request):
     if request.method == 'POST':
 
-        # return HttpResponse(name)
-        name = request.POST['name']
-        real_name = request.POST['real_name']
-        nationality = request.POST['nationality']
-        constellation = request.POST['constellation']
-        blood_type = request.POST['blood_type']
-        intro = request.POST['intro']
+        # multipart/form-data로 전달된
+        form = AritstForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
 
-        if request.POST['birth_date']:
-            birthday_text = request.POST['birth_date']
-            birth_date = datetime.strptime(birthday_text, '%Y-%m-%d')
-        else:
-            birth_date = None
-        Artist.objects.create(
-            name=name,
-            real_name=real_name,
-            nationality=nationality,
-            birth_date=birth_date,
-            constellation=constellation,
-            blood_type=blood_type,
-        )
-        return redirect('artist:artist-list')
+            # -> 아티스트 객체를 저장.
+
+            # # melon_id = form.cleaned_data['melon_id']
+            # img_profile = form.cleaned_data['img_profile']
+            # name = form.cleaned_data['name']
+            # real_name = form.cleaned_data['real_name']
+            # nationality = form.cleaned_data['nationality']
+            # birth_date = form.cleaned_data['birth_date']
+            # constellation = form.cleaned_data['constellation']
+            # blood_type = form.cleaned_data['blood_type']
+            # intro = form.cleaned_data['intro']
+            #
+            # # if form.cleaned_data['birth_date']:
+            # #     birthday_text = form.cleaned_data['birth_date']
+            # #     birth_date = datetime.strptime(birthday_text, '%Y-%m-%d')
+            # # else:
+            # #     birth_date = None
+            # Artist.objects.create(
+            #     name=name,
+            #     real_name=real_name,
+            #     nationality=nationality,
+            #     birth_date=birth_date,
+            #     constellation=constellation,
+            #     blood_type=blood_type,
+            # )
+            return redirect('artist:artist-list')
     else:
-        return render(request, 'artist/artist_add.html')
-    # return HttpResponse('바보')
+        form = AritstForm()
+
+    context = {
+        'artist_form': form,
+    }
+    return render(request, 'artist/artist_add.html', context)

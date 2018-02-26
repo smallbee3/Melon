@@ -4,9 +4,9 @@
 
 {% block content %}
 
-    <h1><a href="{% url 'artist:artist-add' %}">아티스트 직접추가</a></h1>
+    <h1><a href="{% url 'artist:artist-add' %}">직접 아티스트추가</a></h1>
 
-    <form action="" method="POST">
+    <form action="" method="POST" enctype="multipart/form-data">
         {#    ############################################################}
         {#        action은 요청을 어디로 할 것인지 #}
         {#        action값을 안주면 현재 페이지로 설정이 됨. #}
@@ -15,46 +15,61 @@
         {#        우리는 add라는 곳에 요청을 할 것이기 때문에 action은 비워둠.#}
         {#        이 작업을 view의 post_add 함수에서 처리함. if request.method == 'POST' ~#}
         {% csrf_token %}
-        <div class="form-group">
-            <label for="name">이름</label>
-            <input id="name" type="text" name="name" type="text" class="form-control" placeholder="이름">
-        </div>
+{#        <div class="form-group">#}
+{#            <label for="name">이름</label>#}
+{#            <input id="name" type="text" name="name" type="text" class="form-control" placeholder="이름">#}
+{#        </div>#}
+{##}
+{#        <div class="form-group">#}
+{#            <label for="real_name">본명</label>#}
+{#            <input id="real_name" type="text" name="real_name" type="text" class="form-control" placeholder="별명">#}
+{#        </div>#}
+{##}
+{#        <div class="form-group">#}
+{#            <label for="nationality">국적</label>#}
+{#            <input id="nationality" type="text" name="nationality" type="text" class="form-control" placeholder="국적">#}
+{#        </div>#}
+{##}
+{#        <div class="form-group">#}
+{#            <label for=birth_date">생년월일</label>#}
+{#            <input id=birth_date" type="text" name="birth_date" class="form-control" placeholder="xxxx-xx-xx">#}
+{#        </div>#}
+{##}
+{#        <div class="form-group">#}
+{#            <label for="constellation">별자리</label>#}
+{#            <input id="constellation" type="text" name="constellation" type="text" class="form-control" placeholder="별자리">#}
+{#        </div>#}
+{##}
+{#        <div class="form-group">#}
+{#            <label for="blood_type">혈액형</label>#}
+{#            <input id="blood_type" type="text" name="blood_type" type="text" class="form-control" placeholder="혈액형">#}
+{#        </div>#}
+{#        <div class="form-group">#}
+{#            <label for="intro">소개</label>#}
+{#            <textarea name="intro" id="intro" class="form-control" cols="30" rows="10"></textarea>#}
+{#        </div>#}
 
-        <div class="form-group">
-            <label for="real_name">본명</label>
-            <input id="real_name" type="text" name="real_name" type="text" class="form-control" placeholder="별명">
-        </div>
-
-        <div class="form-group">
-            <label for="nationality">국적</label>
-            <input id="nationality" type="text" name="nationality" type="text" class="form-control" placeholder="국적">
-        </div>
-
-        <div class="form-group">
-            <label for=birth_date">생년월일</label>
-            <input id=birth_date" type="text" name="birth_date" class="form-control" placeholder="xxxx-xx-xx">
-        </div>
-
-        <div class="form-group">
-            <label for="constellation">별자리</label>
-            <input id="constellation" type="text" name="constellation" type="text" class="form-control" placeholder="별자리">
-        </div>
-
-        <div class="form-group">
-            <label for="blood_type">혈액형</label>
-            <input id="blood_type" type="text" name="blood_type" type="text" class="form-control" placeholder="혈액형">
-        </div>
-        <div class="form-group">
-            <label for="intro">소개</label>
-            <textarea name="intro" id="intro" class="form-control" cols="30" rows="10"></textarea>
-        </div>
+{#    2/26 두번째 실습 - ModelForm 사용하기 #}
+        {% for field in artist_form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+{#                field.label은 forms.py가 아니라 model의 verbose_name에서 가져온 것. #}
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        {{ error }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
         <button type="submit" class="btn btn-primary">등록</button>
     </form>
 
 
-    <hr>
+
 
 {#    2/26 수업 첫실습 #}
+    <hr>
     <h1><a href="{% url 'artist:artist-search-from-melon' %}">멜론에서 아티스트 검색</a></h1>
     <form action="{% url 'artist:artist-search-from-melon' %}", method="GET">
         <div class="form-group">

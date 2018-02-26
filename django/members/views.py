@@ -190,7 +190,7 @@ def signup_view(request):
 
         # 동적으로 템플릿을 전달할 때
         # 'parent': 'base.html',
-        'parent': parent_tempalte,
+        # 'parent': parent_tempalte,
     }
     return render(request, 'members/signup.html', context)
 
