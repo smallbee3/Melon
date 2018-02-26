@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+from django.conf import settings
 from django.db import models
 
 
@@ -397,7 +398,63 @@ class Artist(models.Model):
         blank=True,
     )
 
+    like_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='ArtistLike', # 밑에선언되어있어서 문자로 써야함.
+        related_name='like_artists',
+        blank=True,
+    )
+
     objects = ArtistManager()
 
     def __str__(self):
         return f'{self.name} {self.birth_date}'
+
+    def toggle_like_user(self, user):
+
+        # # 자신이 artist이며, 주어진 user와의 ArtistLike의 QuerySet
+        # query = ArtistLike.objects.filter(artist=self, user=user)
+        # if query.exists():
+        #     query.delete()
+        #     return False
+        # else:
+        #     ArtistLike.objects.create(artist=self, user=user)
+        #     return True
+
+        like, like_created = self.like_user_info_list.get_or_create(user=user)
+        if not like_created:
+            like.delete()
+        return like_created
+
+
+class ArtistLike(models.Model):
+    # Arist와 User(members.User)와의
+
+    artist = models.ForeignKey(
+        Artist,
+        related_name='like_user_info_list',
+        on_delete=models.CASCADE,
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='like_artist_info_list',
+        on_delete=models.CASCADE,
+    )
+
+    created_data = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        unique_together = (
+            ('artist', 'user'),
+        )
+
+
+    def __str__(self):
+        return 'ArtistLike (User: {user}, Aritst: {artist}, Created: {created})'.format(
+            user=self.user.username,
+            artist=self.artist.name,
+            created=datetime.strftime(self.created_data, '%y.%m.%d')
+        )
