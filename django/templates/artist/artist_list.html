@@ -10,7 +10,7 @@
         <ul class="clearfix">
             {% for artist in artists %}
                 <li class="clearfix">
-                    <a href="">
+                    <a href="{% url 'artist:artist_detail' artist_pk=artist.pk %}">
 
                         {{ artist.img_profile }} <br>
 {#                        {{ artist.img_profile.url }} -> 이렇게하면 이미지파일이 없는 경우 때문에 에러가 발생해서 아래처럼 if문으로 처리해야함  #}
@@ -27,7 +27,20 @@
                             <div>{{ artist.birth_date }}</div>
                             <div>{{ artist.constellation }}</div>
                             <div>{{ artist.blood_type }}</div>
+
                         </div>
+{#                        왜 melonid아님?#}
+
+                        {% if request.user.is_authenticated %}
+                        <form action="{% url 'artist:artist-like-toggle' artist_pk=artist.pk %}" method="post">
+                            {% csrf_token %}
+                            {% if request.user in artist.like_users.all %}
+                                <button type="submit">좋아요 취소</button>
+                            {% else %}
+                                <button type="submit">좋아요</button>
+                            {% endif %}
+                        </form>
+                        {% endif %}
                     </a>
                 </li>
             {% endfor %}
