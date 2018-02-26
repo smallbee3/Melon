@@ -2,12 +2,12 @@
 
 {% block content %}
     <div class="artist-list-container">
+
+        <a href="{% url 'artist:artist-add' %}">
+            <button class="btn">아티스트 추가</button>
+        </a>
+
         <ul class="clearfix">
-            <a href="{% url 'artist:artist-add' %}">
-                <button>아티스트 추가</button>
-            </a>
-
-
             {% for artist in artists %}
                 <li class="clearfix">
                     <a href="">

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+from artist.models import Artist
 
 __all__ = (
     'artist_search_from_melon',
@@ -51,10 +52,26 @@ def artist_search_from_melon(request):
             if url_img_cover == 'http://cdnimg.melon.co.kr':
                 url_img_cover = 'http://cdnimg.melon.co.kr/resource/image/web/default/noArtist_300_160727.jpg'
 
+
+            # 2/26 실습 2
+            # 여기에 데이터가 추가되어야함
+            # artist_id_list = Artist.objects.all().values_list('melon_id', flat=True)
+            artist_id_list = Artist.objects.values_list('melon_id', flat=True)
+            print(artist_id_list)
+            if artist_id in artist_id_list:
+                artist_on = 1
+            else:
+                artist_on = 0
+            ##########################
+            # -> 아래서 한줄로 해결.
+            # 'is_exist': Artist.objects.filter(melon_id=artist_id).exists(),
+
             artist_info_list.append({
                 'name': name,
                 'url_img_cover': url_img_cover,
                 'artist_id': artist_id,
+                'artist_on': artist_on,
+                'is_exist': Artist.objects.filter(melon_id=artist_id).exists(),
             })
         context['artist_info_list'] = artist_info_list
     return render(request, 'artist/artist_search_from_melon.html', context)
