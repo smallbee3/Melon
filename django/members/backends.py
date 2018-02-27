@@ -1,7 +1,5 @@
-# from django.conf import settings
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile, File
 
@@ -45,19 +43,20 @@ import requests
 #             return None
 
 
-
 class FacebookBackend:
     CLIENT_ID = settings.FACEBOOK_APP_ID
     CLIENT_SECRET = settings.FACEBOOK_SECRET_CODE
     URL_ACCESS_TOKEN = 'https://graph.facebook.com/v2.12/oauth/access_token'
     URL_ME = 'https://graph.facebook.com/v2.12/me'
 
+    # 바로 아래처럼 facebook_id를 인자로 받는 것으로 작성했다가,
+    # 1. 다시 생각해보니 아직 인증되지 않은 유저의 경우
+    #   facebook_id가 존재하지 않음.
+    # 2. code부터 작업하면 좀 더 많은 내용을 담을 수 있음.
+    #    code를 페이스북에 보내서 우리회원인지 확인할 수도 있고
+    #    회원아닌경우 get parameter로 전달된 값들로 가입시킬 수도 있음.
+
     # def authenticate(self, request, facebook_id):
-    class FacebookBackend:
-        CLIENT_ID = settings.FACEBOOK_APP_ID
-        CLIENT_SECRET = settings.FACEBOOK_SECRET_CODE
-        URL_ACCESS_TOKEN = 'https://graph.facebook.com/v2.12/oauth/access_token'
-        URL_ME = 'https://graph.facebook.com/v2.12/me'
 
     def authenticate(self, request, code):
         def get_access_token(auth_code):
@@ -105,7 +104,8 @@ class FacebookBackend:
             response_dict = response.json()
             return response_dict
 
-        try:
+        try:    # -> 아래 인증과정에서 오류가 발생할 경우
+                #    None을 리턴할 수 있도록.
             access_token = get_access_token(code)
             user_info = get_user_info(access_token)
 
@@ -115,10 +115,7 @@ class FacebookBackend:
             last_name = user_info['last_name']
             url_picture = user_info['picture']['data']['url']
 
-
-
-
-            try:
+            try:    # -> 회원가입되지 않은 유저의 경우 예외처리
                 user = User.objects.get(username=facebook_id)
             except User.DoesNotExist:
                 user = User.objects.create_user(
@@ -136,20 +133,20 @@ class FacebookBackend:
                 # if album.img_cover:
                 #     album.img_cover.delete()
 
+            # 사진이 없을 때만 저장하는 것으로 간단하게 실습.
             if not user.img_profile:
                 temp_file = download(url_picture)
                 ext = get_buffer_ext(temp_file)
                 user.img_profile.save(f'{user.pk}.{ext}', File(temp_file))
             return user
 
-
             # binary_data = request.get(url_picture)
             # user.img_profile.save(facebook_id, ContentFile(binary_data))
 
-            return user
         except Exception:
             return None
 
+    # "왜 만드는지는 정확히 모르겠는데 필수로 만들라고 해서"
     def get_user(self, user_id):
         try:
             return User.objects.get(pk=user_id)
