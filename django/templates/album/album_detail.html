@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="artist-list-container">
+
+        <h2><a href="{% url 'album:album-add' %}">앨범 추가</a></h2>
+
+        <ul class="clearfix">
+
+            <li class="clearfix">
+                <img src="{% if album.img_cover %}{{ album.img_cover.url }}{% endif %}" alt="" class="cover">
+                <div class="artist-info">
+                    <div>{{ album.album_id }}</div>
+                    <div class="title">{{ album.title }}</div>
+                    <div>{{ album.release_date }}</div>
+                    <div>{{ album.genre }}</div>
+                </div>
+
+                {% if request.user.is_authenticated %}
+                    <form action="{% url 'album:album-like-toggle' album_pk=album.pk %}" method="post">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="next-path" value="{{ request.get_full_path }}">
+
+{#                        {% if album in request.user.album_set.all %}#}
+                        {% if request.user in album.like_users.all %}
+                            <button type="submit">좋아요 취소</button>
+                        {% else %}
+                            <button type="submit">좋아요</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+{% endblock %}

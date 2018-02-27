@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h2><a href="{% url 'album:album-edit' album_pk=album.pk %}">직접 앨범수정</a></h2>
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% for field in album_form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+                {% if field.errors %}
+                    <ul>
+                        {% for error in errors %}
+                            <li>
+                                {{ field.error }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">수정</button>
+    </form>
+
+{#    <hr>#}
+{#    <h2><a href="{% url 'album:album-search-from-melon' %}">멜론에서 노래 검색</a></h2>#}
+{#    <form action="{% url 'album:album-search-from-melon' %}" method="GET">#}
+{#        <div class="form-group">#}
+{#            <input type="text" name="keyword" class="form-group", value="{{ request.GET.keyword }}">#}
+{#        </div>#}
+{#        <button type="submit" class="btn btn-primary">음악 검색</button>#}
+{#    </form>#}
+
+
+
+</div>
+{% endblock %}

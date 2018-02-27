@@ -1,20 +1,20 @@
-
 {% extends 'base.html' %}
 
-
 {% block content %}
-
-    <h1><a href="{% url 'artist:artist-add' %}">직접 아티스트추가</a></h1>
+<div>
+    <h2><a href="{% url 'artist:artist-add' %}">직접 아티스트추가</a></h2>
 
     <form action="" method="POST" enctype="multipart/form-data">
-        {#    ############################################################}
+{#                                         이미지 파일 저장.#}
+        {% csrf_token %}
+
+        {#############################################################}
         {#        action은 요청을 어디로 할 것인지 #}
         {#        action값을 안주면 현재 페이지로 설정이 됨. #}
         {#        action="search"는 localhost:8000/add/search로 감#}
         {#          action="/search"는 localhost:8000/search로 감#}
         {#        우리는 add라는 곳에 요청을 할 것이기 때문에 action은 비워둠.#}
         {#        이 작업을 view의 post_add 함수에서 처리함. if request.method == 'POST' ~#}
-        {% csrf_token %}
 {#        <div class="form-group">#}
 {#            <label for="name">이름</label>#}
 {#            <input id="name" type="text" name="name" type="text" class="form-control" placeholder="이름">#}
@@ -56,9 +56,11 @@
 {#                field.label은 forms.py가 아니라 model의 verbose_name에서 가져온 것. #}
                 {{ field }}
                 {% if field.errors %}
-                    {% for error in field.errors %}
-                        {{ error }}
-                    {% endfor %}
+                    <ul>
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
             </div>
         {% endfor %}
@@ -66,11 +68,15 @@
     </form>
 
 
-
-
+<!--
 {#    2/26 수업 첫실습 #}
+    form을 한 개 더 추가
+    이 form이 하는 일은 '멜론에서 Artist검색 후 목록 보여주기'를 실행
+        -> 목록을 보여주는 일은 artist-search-from-melon이 하는것에 유의
+        -> 검색 후에는 URL이 'artist-search-from-melon'부분으로 이동해야 함
+-->
     <hr>
-    <h1><a href="{% url 'artist:artist-search-from-melon' %}">멜론에서 아티스트 검색</a></h1>
+    <h2><a href="{% url 'artist:artist-search-from-melon' %}">멜론에서 아티스트 검색</a></h2>
     <form action="{% url 'artist:artist-search-from-melon' %}", method="GET">
         <div class="form-group">
             <input type="text" name="keyword" class="form-control" value="{{ request.GET.keyword }}">
@@ -79,4 +85,5 @@
 
     </form>
 
+</div>
 {% endblock %}

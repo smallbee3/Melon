@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <h1><a href="{% url 'artist:artist-edit' artist_pk=artist_pk %}">직접 아티스트수정</a></h1>
+<div>
+    <h2><a href="{% url 'artist:artist-edit' artist_pk=artist.pk %}">직접 아티스트수정</a></h2>
 
     <form action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -11,14 +11,18 @@
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
 {#                field.label은 forms.py가 아니라 model의 verbose_name에서 가져온 것. #}
                 {{ field }}
+{#              if문으로 안감싸도 작동은 하지만 안의 ul, li요소 때문. #}
                 {% if field.errors %}
-                    {% for error in field.errors %}
-                        {{ error }}
-                    {% endfor %}
+                    <ul>
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
             </div>
         {% endfor %}
         <button type="submit" class="btn btn-primary">수정</button>
     </form>
 
+</div>
 {% endblock %}

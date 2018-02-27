@@ -1,5 +1,8 @@
 import re
 
+# from ..song.models import Song
+# from song.models import Song
+
 
 def song_list_crawler(q):
 
@@ -44,11 +47,16 @@ def song_list_crawler(q):
         # print('')
         # print(f'album: {album}')
 
+        from song.models import Song
         result.append({
             'song_id': song_id,
             'title': title,
             'artist': artist,
             'album': album,
+            # 2/26
+            # song/song_search_from_melon.html에서 'DB 업데이트/저장'을 구분하기 위한 데이터
+            # 크롤러 코드 안에 포함되어도 될 것 같아서 이곳에 추가함.
+            'is_exist': Song.objects.filter(song_id=song_id).exists(),
         })
     return result
 

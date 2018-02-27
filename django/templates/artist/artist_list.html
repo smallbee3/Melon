@@ -3,18 +3,16 @@
 {% block content %}
     <div class="artist-list-container">
 
-        <a href="{% url 'artist:artist-add' %}">
-            <button class="btn">아티스트 추가</button>
-        </a>
+        <h2><a href="{% url 'artist:artist-add' %}">아티스트 추가</a></h2>
 
         <ul class="clearfix">
             {% for artist in artists %}
                 <li class="clearfix">
                     <a href="{% url 'artist:artist_detail' artist_pk=artist.pk %}">
 
-                        {{ artist.img_profile }} <br>
+{#                        {{ artist.img_profile }} <br>#}
 {#                        {{ artist.img_profile.url }} -> 이렇게하면 이미지파일이 없는 경우 때문에 에러가 발생해서 아래처럼 if문으로 처리해야함  #}
-                        {% if artist.img_profile %} {{ artist.img_profile.url|truncatewords_html:10 }} {% endif %}
+{#                        {% if artist.img_profile %} {{ artist.img_profile.url|truncatewords_html:10 }} {% endif %}#}
 
 {#                        artist.img_profile.url은 함수이기 때문에 없으면 에러가 발생하지만,                              #}
 {#                        artist.img_profile.name은 없음에도 불구하고 그 자체로 정적 파일이기 때문에 없어도 에러가 발생하지 않는다.#}
@@ -27,25 +25,21 @@
                             <div>{{ artist.birth_date }}</div>
                             <div>{{ artist.constellation }}</div>
                             <div>{{ artist.blood_type }}</div>
-
                         </div>
-{#                        왜 melonid아님?#}
 
                         {% if request.user.is_authenticated %}
-                        <form action="{% url 'artist:artist-like-toggle' artist_pk=artist.pk %}" method="post">
-                            {% csrf_token %}
-                            {% if request.user in artist.like_users.all %}
-                                <button type="submit">좋아요 취소</button>
-                            {% else %}
-                                <button type="submit">좋아요</button>
-                            {% endif %}
-                        </form>
+                            <form action="{% url 'artist:artist-like-toggle' artist_pk=artist.pk %}" method="post">
+                                {% csrf_token %}
+                                {% if request.user in artist.like_users.all %}
+                                    <button type="submit">좋아요 취소</button>
+                                {% else %}
+                                    <button type="submit">좋아요</button>
+                                {% endif %}
+                            </form>
                         {% endif %}
                     </a>
                 </li>
             {% endfor %}
-
-
         </ul>
     </div>
 {% endblock %}

@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <h1><a href="{% url 'song:song-search-from-melon' %}">멜론에서 노래 검색</a></h1>
+    <h2><a href="{% url 'song:song-search-from-melon' %}">멜론에서 노래 검색</a></h2>
     <form action="" method="GET">
         <div class="form-group">
             <input type="text" name="keyword" class="form-group", value="{{ request.GET.keyword }}">
@@ -23,7 +23,12 @@
                 <form action="{% url 'song:song-add-from-melon' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="song_id" value="{{ song.song_id }}">
-                    <button type="submit" class="btn btn-primary">DB 저장</button>
+
+                    {% if song.is_exist %}
+                        <button type="submit" class="btn btn-primary">DB 업데이트</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary">DB 저장</button>
+                    {% endif %}
                 </form>
         {% endfor %}
     </ul>

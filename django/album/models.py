@@ -1,9 +1,10 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.core.files import File
 from django.db import models
 
-from artist.models import Artist
+
 from crawler.album import album_detail_crawler
 from utils.file import get_buffer_ext, download
 
@@ -79,11 +80,20 @@ class Album(models.Model): # -> 모델을 상속받는 모델 클래스
     # song은 Song 클래스에서 다대일(ForeignKey)로 참조
     release_date = models.DateField('발매일', blank=True, null=True)
 
+    like_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='AlbumLike', # 밑에선언되어있어서 문자로 써야함.
+        related_name='like_albums',
+        blank=True,
+    )
+
     # genre = models.CharField('장르', max_length=100, blank=True)
     # 장르는 가지고 있는 노래들에서 가져오기
     @property
     def genre(self):
         return ','.join(self.song_set.values_list('genre', flat=True).distinct())
+
+    objects = AlbumManager()
 
     def __str__(self):
         # return '{title} [{artists}]'.format(
@@ -92,7 +102,46 @@ class Album(models.Model): # -> 모델을 상속받는 모델 클래스
         # )
         return f'앨범명: {self.title}'
 
-    objects = AlbumManager()
+    def toggle_like_user(self, user):
+
+        like, like_created = self.like_user_info_list.get_or_create(user=user)
+        if not like_created:
+            like.delete()
+        return like_created
+
+
+class AlbumLike(models.Model):
+
+    album = models.ForeignKey(
+        Album,
+        related_name='like_user_info_list',
+        on_delete=models.CASCADE,
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='like_album_info_list',
+        on_delete=models.CASCADE,
+    )
+
+    created_data = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        unique_together = (
+            ('album', 'user'),
+        )
+
+    def __str__(self):
+        return 'AlbumLike (User: {user}, Album: {album}, Created: {created})'.format(
+            user=self.user.username,
+            album=self.album.title,
+            created=datetime.strftime(self.created_data, '%y.%m.%d')
+        )
+
+
+
 
 # 얘가 아티스트랑 연결. 하위개념이 앨범, 상위개념이 아티스트
 # 그러면 관계 정의필드에서 하위필드.

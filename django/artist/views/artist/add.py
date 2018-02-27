@@ -1,8 +1,6 @@
-from datetime import datetime
 from django.shortcuts import redirect, render
 
 from ...forms import AritstForm
-from ...models import Artist
 
 
 __all__ = (
@@ -80,8 +78,11 @@ __all__ = (
 
 def artist_add(request):
     if request.method == 'POST':
-
-        # multipart/form-data로 전달된
+        """
+        multipart/form-data로 전달된 파일은
+        request.FILES 속성에 들어있음
+        boundform을 만들 때, request.POST와 request.FILES를 전부 전달
+        """
         form = AritstForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()

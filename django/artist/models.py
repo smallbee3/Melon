@@ -398,6 +398,7 @@ class Artist(models.Model):
         blank=True,
     )
 
+    # 2/26 수업시간에 '좋아요' 기능구현 위해 추가
     like_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ArtistLike', # 밑에선언되어있어서 문자로 써야함.
@@ -405,6 +406,7 @@ class Artist(models.Model):
         blank=True,
     )
 
+    # 위에서 열심히 만든 Manager를 object에 할당하기.
     objects = ArtistManager()
 
     def __str__(self):
@@ -412,23 +414,51 @@ class Artist(models.Model):
 
     def toggle_like_user(self, user):
 
+        """
+        자신의 like_users에 주어진 user가 존재하지 않으면
+            like_users에 추가한다
+        이미 존재할 경우에는 없앤다
+        :param user:
+        :return:
+        """
+        # 나 - 하다가 실패
+        # self.like_user_info_list.create(user=user)
+
+
+        # 1단계
         # # 자신이 artist이며, 주어진 user와의 ArtistLike의 QuerySet
         # query = ArtistLike.objects.filter(artist=self, user=user)
+        # # QuerySet이 존재할 경우
         # if query.exists():
+        #     # 지워주고 False반환
         #     query.delete()
         #     return False
+        # # QuerySet이 존재하지 않을 경우
         # else:
+        #     # 새로 ArtistLike를 생성하고 True반환
         #     ArtistLike.objects.create(artist=self, user=user)
         #     return True
 
+        # 2단계
+        # 자신이 'artist'이며 user가 주어진 user인 ArtistLike를 가져오거나 없으면 생성
         like, like_created = self.like_user_info_list.get_or_create(user=user)
+        # 만약 이미 있었을 경우 (새로 생성되지 않았을 경우)
         if not like_created:
+            # Like를 지워줌
             like.delete()
+        # 생성여부를 반환 (Toggle후 현재 상태에 대한 True/False와 같은 결과)
         return like_created
 
 
 class ArtistLike(models.Model):
-    # Arist와 User(members.User)와의
+    """
+    Artist와 User(members.User)와의 관계를 나타내는 중개모델
+    settings.AUTH_USER_MODEL
+
+    다 작성 후에
+    임의의 유저에서 좋아하는 Artist추가해보기
+    임의의 Artist에서 좋아하고있는 유저 추가해보기
+    """
 
     artist = models.ForeignKey(
         Artist,
@@ -451,9 +481,8 @@ class ArtistLike(models.Model):
             ('artist', 'user'),
         )
 
-
     def __str__(self):
-        return 'ArtistLike (User: {user}, Aritst: {artist}, Created: {created})'.format(
+        return 'ArtistLike (User: {user}, Artist: {artist}, Created: {created})'.format(
             user=self.user.username,
             artist=self.artist.name,
             created=datetime.strftime(self.created_data, '%y.%m.%d')

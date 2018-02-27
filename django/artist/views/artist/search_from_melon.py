@@ -23,9 +23,10 @@ def artist_search_from_melon(request):
     3. 해당 결과 목록을 템플릿에 출력
         context = {'artist_info_list': artist_info_list}로 전달 후
         템플릿에서 사용
-    :param request:
-    :return:
     """
+    # keyword = request.GET['keyword']
+    # -> 'MultiValueDictKeyError' 발생
+
     keyword = request.GET.get('keyword')
     context = {}
     if keyword:
@@ -57,7 +58,7 @@ def artist_search_from_melon(request):
             # 여기에 데이터가 추가되어야함
             # artist_id_list = Artist.objects.all().values_list('melon_id', flat=True)
             artist_id_list = Artist.objects.values_list('melon_id', flat=True)
-            print(artist_id_list)
+            # print(artist_id_list)
             if artist_id in artist_id_list:
                 artist_on = 1
             else:

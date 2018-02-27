@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="artist-list-container">
+
+        <h2><a href="{% url 'song:song-add' %}">노래 추가</a></h2>
+
+        <ul class="clearfix">
+
+            <li class="clearfix">
+                song_id: {{ song.song_id }}<br>
+                title: {{ song.title }}<br>
+                genre: {{ song.genre }}<br>
+                lyrics: {{ song.lyrics|truncatewords:10 }}<br>
+                album_id: {{ song.album.album_id }}<br>
+                artist_id: {{ song.album.artists.first.melon_id }}<br>
+
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'song:song-like-toggle' song_pk=song.pk %}" method="post">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="next-path" value="{{ request.get_full_path }}">
+
+
+{#                        {% if song in request.user.like_song_info_list.all %} (x) #}
+{#                        {% if song in request.user.song_set.all %}#}
+                    {% if request.user in song.like_users.all %}
+                        <button type="submit">좋아요 취소</button>
+                    {% else %}
+                        <button type="submit">좋아요</button>
+                    {% endif %}
+                </form>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+{% endblock %}

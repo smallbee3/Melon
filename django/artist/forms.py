@@ -3,6 +3,10 @@ from django import forms
 
 from artist.models import Artist
 
+__all__ = (
+    'AritstForm',
+)
+
 
 class AritstForm(forms.ModelForm):
     class Meta:

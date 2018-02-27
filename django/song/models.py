@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.conf import settings
 from django.db import models
 
 from album.models import Album
@@ -98,6 +101,13 @@ class Song(models.Model):
         blank=True,
     )
 
+    like_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='SongLike',
+        related_name='like_songs',
+        blank=True,
+    )
+
     # 위에 변경한 artists와 프로퍼티 겹쳐서 없애야함
     # @property
     # def artists(self):
@@ -113,10 +123,7 @@ class Song(models.Model):
     def formatted_release_date(self):
         return self.album.release_date.strftime('%Y.%m.%d')
 
-        # 2017.01.15
-        # return self.album.release_date
-
-
+    objects = SongManager()
 
     def __str__(self):
         # 가수명 - 곡제목 (앨범명)
@@ -135,8 +142,42 @@ class Song(models.Model):
             # 강남스타일 사건(앨범이 없어서 위에 출력에서 에러)때문에
             # if self.album으로 분기함
 
-    objects = SongManager()
+    def toggle_like_user(self, user):
 
+        like, like_created = self.like_user_info_list.get_or_create(user=user)
+        if not like_created:
+            like.delete()
+        return like_created
+
+
+class SongLike(models.Model):
+
+    song = models.ForeignKey(
+        Song,
+        related_name='like_user_info_list',
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='like_song_info_list',
+        on_delete=models.CASCADE,
+    )
+
+    created_data = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        unique_together = (
+            ('song', 'user'),
+        )
+
+    def __str__(self):
+        return 'SongLike (User: {user}, Song: {song}, Created: {created})'.format(
+            user=self.user.username,
+            song=self.song.title,
+            created=datetime.strftime(self.created_data, '%y.%m.%d')
+        )
 
 # class ArtistSong(models.Model):
 #     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)

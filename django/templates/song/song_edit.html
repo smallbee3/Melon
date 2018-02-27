@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h2><a href="{% url 'song:song-edit' song_pk=song.pk %}">직접 노래수정</a></h2>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+
+        {% for field in song_form %}
+            <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+                {% if field.errors %}
+                    <ul>
+                        {% for error in errors %}
+                            <li>
+                                {{ field.error }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">수정</button>
+    </form>
+
+</div>
+{% endblock %}
