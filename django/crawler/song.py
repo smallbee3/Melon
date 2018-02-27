@@ -2,6 +2,7 @@ import re
 
 # from ..song.models import Song
 # from song.models import Song
+# from song.models import Song
 
 
 def song_list_crawler(q):
@@ -47,6 +48,7 @@ def song_list_crawler(q):
         # print('')
         # print(f'album: {album}')
 
+        # from song.models import Song
         from song.models import Song
         result.append({
             'song_id': song_id,

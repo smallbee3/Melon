@@ -67,10 +67,14 @@ ALLOWED_HOSTS = []
 # 02/23 Melon 23 Customizing User2
 AUTH_USER_MODEL = 'members.User'
 
+YOUTUBE_API_KEY = 'AIzaSyBfZC9ulvvvMJiPUIu5rmhppG5U5mIf4PM'
 
 FACEBOOK_APP_ID = '100272904140135'
-FACEBOOK_SECRET_CDDE = '69546495d5613caafab5cb698ea9f9ce'
-
+FACEBOOK_SECRET_CODE = '69546495d5613caafab5cb698ea9f9ce'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'members.backends.FacebookBackend',
+]
 
 # Application definition
 

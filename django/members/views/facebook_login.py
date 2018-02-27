@@ -1,6 +1,6 @@
 import requests
 from django.conf import settings
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model, login, authenticate
 from django.http import HttpResponse
 from django.shortcuts import redirect
 
@@ -23,7 +23,16 @@ User = get_user_model()
 # 그래서 클라이언트가 받아온 'code'값을 가지고
 #
 
+
 def facebook_login(request):
+    # GET parameter가 왔을 것으로 가정
+    code = request.GET.get('code')
+    user = authenticate(request, code=code)
+    login(request, user)
+    return redirect('index')
+
+
+def facebook_login_backup(request):
 
     # url = 'https://graph.facebook.com/v2.12/oauth/access_token?client_id=100272904140135&redirect_uri=http://localhost:8000/facebook-login&client_secret=69546495d5613caafab5cb698ea9f9ce&code={code-parameter}'
 
@@ -44,10 +53,10 @@ def facebook_login(request):
     # print(response.text)
 
     response_dict = response.json()
-    for key, value in response_dict.items():
-        print('')
-        print(f'{key}: {value}')
-        print('')
+    # for key, value in response_dict.items():
+    #     print('')
+    #     print(f'{key}: {value}')
+    #     print('')
 
     # 지금 장고 로직에서 오랜만에 벗어났쬬.
     # return redirect('login')
@@ -90,9 +99,10 @@ def facebook_login(request):
         user = User.objects.get(username=facebook_id)
     else:
 
+
     # 원래 어센티케이티에서 검사했음.
     # 이제 유저를 인증하는 로직을 따로 만들어야함.
-    
+    # -> backends.py 만들고 장고문서보러 감.
 
         user = User.objects.create_user(
             username=facebook_id,
