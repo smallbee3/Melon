@@ -68,6 +68,10 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'members.User'
 
 
+FACEBOOK_APP_ID = '100272904140135'
+FACEBOOK_SECRET_CDDE = '69546495d5613caafab5cb698ea9f9ce'
+
+
 # Application definition
 
 INSTALLED_APPS = [

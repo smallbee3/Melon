@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 
 from config import views
-from members.views import login_view, logout_view, signup_view
+from members.views import login_view, logout_view, signup_view, facebook_login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +27,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('signup/', signup_view, name='signup'),
+    path('facebook-login/', facebook_login, name='facebook-login'),
 
     path('artist/', include('artist.urls')),
     path('song/', include('song.urls')),

@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="login-container">
+
 	<div class="login-header">
 		<img src="{% static 'images/logo_large.png' %}" alt="">
 	</div>
@@ -21,6 +22,10 @@
 			<button type="submit" class="btn btn-login btn-theme">로그인</button>
 		</div>
 	</form>
+
+
+    <a class="btn-facebook" href="https://www.facebook.com/v2.12/dialog/oauth?client_id=100272904140135&redirect_uri=http://localhost:8000/facebook-login/">페이스북으로 로그인</a>
+
 </div>
 
 
