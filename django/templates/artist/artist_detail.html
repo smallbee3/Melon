@@ -34,6 +34,10 @@
                         <button type="submit">좋아요</button>
                     {% endif %}
                 </form>
+                <form action="{% url 'artist:artist-edit' artist_pk=artist.pk %}" method="post">
+                    {% csrf_token %}
+                        <button type="submit">수정하기</button>
+                </form>
                 {% endif %}
             </li>
         </ul>
