@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     'artist',
     'song',
     'members',
+    'video',
 ]
 
 MIDDLEWARE = [

@@ -32,6 +32,7 @@ urlpatterns = [
     path('artist/', include('artist.urls')),
     path('song/', include('song.urls')),
     path('album/', include('album.urls')),
+    path('video/', include('video.urls'))
 ]
 
  # settings.MEDIA_URL('/media/')로 시작하는 요청은

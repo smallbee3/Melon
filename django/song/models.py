@@ -4,13 +4,14 @@ from django.conf import settings
 from django.db import models
 
 from album.models import Album
-from artist.models import Artist
+# from artist.models import Artist
 
 # Artist
 #   - Album
 #       - Song
 #       - Song
 #       - Song
+from artist.models.artist import Artist
 from crawler.song import song_detail_crawler
 
 

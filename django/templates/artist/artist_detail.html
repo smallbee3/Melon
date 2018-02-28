@@ -21,25 +21,73 @@
                 {# 참고로 artist_add.html에서 추가한 artist는 melon_id가 존재하지 않는 점을 고려해야함. #}
 
                 {% if request.user.is_authenticated %}
-                <form action="{% url 'artist:artist-like-toggle' artist_pk=artist.pk %}" method="post">
-                    {% csrf_token %}
+                    <form action="{% url 'artist:artist-like-toggle' artist_pk=artist.pk %}" method="post">
+                        {% csrf_token %}
 
-{#                    artist_detail에서 like_toggle시 원래 페이지로 갈 수 있도록 next-path값 추가    #}
-{#                    https://docs.djangoproject.com/en/2.0/ref/request-response/#django.http.HttpRequest.get_full_path #}
-                    <input type="hidden" name="next-path" value="{{ request.get_full_path }}">
+                        {#                    artist_detail에서 like_toggle시 원래 페이지로 갈 수 있도록 next-path값 추가    #}
+                        {#                    https://docs.djangoproject.com/en/2.0/ref/request-response/#django.http.HttpRequest.get_full_path #}
+                        <input type="hidden" name="next-path" value="{{ request.get_full_path }}">
 
-                    {% if request.user in artist.like_users.all %}
-                        <button type="submit">좋아요 취소</button>
-                    {% else %}
-                        <button type="submit">좋아요</button>
-                    {% endif %}
-                </form>
-                <form action="{% url 'artist:artist-edit' artist_pk=artist.pk %}" method="post">
-                    {% csrf_token %}
+                        {% if request.user in artist.like_users.all %}
+                            <button type="submit">좋아요 취소</button>
+                        {% else %}
+                            <button type="submit">좋아요</button>
+                        {% endif %}
+                    </form>
+                    <form action="{% url 'artist:artist-edit' artist_pk=artist.pk %}" method="post">
+                        {% csrf_token %}
                         <button type="submit">수정하기</button>
-                </form>
+                    </form>
                 {% endif %}
             </li>
         </ul>
+
     </div>
+
+    <ul>
+        <h2>DB 저장 동영상 목록</h2>
+        <li>
+            {% for video in artist.videos.all %}
+                동영상링크: <a href="https://www.youtube.com/watch?v={{ video }}">https://www.youtube.com/watch?v={{ video }}</a><br>
+                <a href="https://www.youtube.com/watch?v={{ video_info_dict.video_id }}" target="_blank">
+                    <img class="cover" src="{{ video_info_dict.thumbnails }}" alt=""><br>
+                </a>
+            {% endfor %}
+        </li>
+    </ul>
+
+
+
+
+    <ul>
+        <h2>관련 YouTube 영상</h2>
+        <li>
+            {% for video_info_dict in video_info_list %}
+                제목: ({{ video_info_dict.title }})<br>
+{#                동영상링크: <a href="https://www.youtube.com/watch?v={{ video_info_dict.video_id }}">#}
+{#                https://www.youtube.com/watch?v={{ video_info_dict.video_id }}</a><br>#}
+                <a href="https://www.youtube.com/watch?v={{ video_info_dict.video_id }}" target="_blank">
+                <img class="cover" src="{{ video_info_dict.thumbnails }}" alt=""><br>
+                </a>
+
+                <form action="{% url 'video:video-add' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="video_id" value="{{ video_info_dict.video_id }}">
+                    <input type="hidden" name="title" value="{{ video_info_dict.title }}">
+                    <input type="hidden" name="thumbnails" value="{{ video_info_dict.thumbnails }}">
+                    <input type="hidden" name="artist_pk" value="{{ artist.pk }}">
+                    <input type="hidden" name="next-path" value="{{ request.get_full_path }}">
+
+
+                    {% if video_info_dict.is_exist %}
+                        <button type="submit" class="">DB 업데이트</button>
+                    {% else %}
+                        <button type="submit" class="">DB에 추가하기</button>
+                    {% endif %}
+                </form>
+            {% endfor %}
+        </li>
+
+    </ul>
+
 {% endblock %}

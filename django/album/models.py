@@ -43,8 +43,6 @@ class AlbumManager(models.Manager):
             album.img_cover.delete()
         album.img_cover.save(file_name, File(temp_file))
 
-
-
         return album, album_created
 
     # def get_or_create_from_melon(self, album_id):
