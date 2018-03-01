@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-
+import json
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -45,12 +45,36 @@ STATICFILES_DIRS = [
     STATIC_DIR
 ]
 
+                        # SECRET #
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
+SECRETS_BASE = os.path.join(SECRETS_DIR, 'base.json')
+
+# 1) base.json 파일을 읽어온 결과
+f = open(SECRETS_BASE, 'rt')
+base_text = f.read()
+f.close()
+
+# 2) 위 결과(JSON형식의 문자열)를 파이선 객체로 변환
+secrets_base = json.loads(base_text)
+
+# print(secrets_base)
+
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = secrets_base['SECRET_KEY']
+YOUTUBE_API_KEY = secrets_base['YOUTUBE_API_KEY']
+FACEBOOK_APP_ID = secrets_base['FACEBOOK_APP_ID']
+FACEBOOK_SECRET_CODE = secrets_base['FACEBOOK_SECRET_CODE']
+EMAIL_HOST_PASSWORD = secrets_base['EMAIL_HOST_PASSWORD']
+SMS_API_KEY = secrets_base['SMS_API_KEY']
+SMS_API_SECRET = secrets_base['SMS_API_SECRET']
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2^cd83g%$xem2u(4fno)5s+e20)86v46y(!%rq@(x9*v!3&=ui'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -58,7 +82,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 # ALLOWED_HOSTS = ['*']
-# ALLOWED_HOSTS = ['local host']
+# ALLOWED_HOSTS = ['localhost']
 
 # 특정 도메인에서 드러왔을 때만 장고 앱이 실행되게 하는 것.
 # locul host -> 개발할 때 로컬호스트만 하니까.
@@ -67,14 +91,26 @@ ALLOWED_HOSTS = []
 # 02/23 Melon 23 Customizing User2
 AUTH_USER_MODEL = 'members.User'
 
-YOUTUBE_API_KEY = 'AIzaSyBfZC9ulvvvMJiPUIu5rmhppG5U5mIf4PM'
 
-FACEBOOK_APP_ID = '100272904140135'
-FACEBOOK_SECRET_CODE = '69546495d5613caafab5cb698ea9f9ce'
+# FacebookBackend #
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'members.backends.FacebookBackend',
 ]
+
+
+# Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = secrets_base['EMAIL_HOST_USER']
+# EMAIL_HOST_PASSWORD =
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = secrets_base['DEFAULT_FROM_EMAIL']
+
+
 
 # Application definition
 
@@ -96,6 +132,8 @@ INSTALLED_APPS = [
     'song',
     'members',
     'video',
+    'sms',
+    'emails',
 ]
 
 MIDDLEWARE = [

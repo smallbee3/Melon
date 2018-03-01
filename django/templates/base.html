@@ -37,6 +37,10 @@
 					<li><a href="{% url 'artist:artist-list' %}">아티스트</a></li>
 					<li><a href="{% url 'album:album-list' %}">앨범</a></li>
 					<li><a href="{% url 'song:song-list' %}">곡</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'emails:send-email' %}">EMAIL</a></li>
+                    <li><a href="{% url 'sms:sms-send' %}">SMS</a></li>
+					{% endif %}
 				</ul>
 			</nav>
 			<nav class="main-header-nav nav-right clearfix">

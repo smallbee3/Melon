@@ -2,6 +2,8 @@ from django.core.files import File
 from django.shortcuts import render, redirect, get_object_or_404
 
 # from artist.models import Artist  -> import 위치 바뀜.
+from django.urls import reverse
+
 from artist.models.artist import Artist
 from utils.file import download, get_buffer_ext
 from video.models import Video
@@ -43,7 +45,6 @@ def video_add(request):
         artist = get_object_or_404(Artist, pk=artist_pk)
         artist.videos.add(video)
 
-
         print('')
         print(title)
         print(f'{title[:15]}')
@@ -55,9 +56,15 @@ def video_add(request):
         file_name = f'{title[:15]}.{get_buffer_ext(temp_file)}'
         video.thumbnail.save(file_name, File(temp_file))
 
-        # next_path = request.POST.get(
-        #     'next-path',
-        #     reverse('artist:artist-detail', )
-        # )
+        next_path = request.POST.get(
+            'next-path',
+            # reverse('artist:artist-detail', args=[artist_pk]),
+            reverse('artist:artist-detail', kwargs={'artist_pk': artist_pk}),
+        )
+        print('')
+        print(next_path)
+        print('')
 
-        return redirect('artist:artist-detail', artist_pk=artist_pk)
+        return redirect(next_path)
+
+        # return redirect('artist:artist-detail', artist_pk=artist_pk)

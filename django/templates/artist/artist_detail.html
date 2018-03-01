@@ -48,9 +48,12 @@
         <h2>DB 저장 동영상 목록</h2>
         <li>
             {% for video in artist.videos.all %}
-                동영상링크: <a href="https://www.youtube.com/watch?v={{ video }}">https://www.youtube.com/watch?v={{ video }}</a><br>
-                <a href="https://www.youtube.com/watch?v={{ video_info_dict.video_id }}" target="_blank">
-                    <img class="cover" src="{{ video_info_dict.thumbnails }}" alt=""><br>
+{#                동영상링크: <a href="https://youtu.be/{{ video.video_id }}" target="_blank">https://www.youtube.com/watch?v={{ video.video_id }}</a><br>#}
+                제목: ({{ video.title }})<br>
+{#                {{ video.thumbnail }}<br>#}
+{#                {{ video.thumbnail.url }}<br>#}
+                <a href="https://youtu.be/{{ video.video_id }}" target="_blank">
+                    <img class="cover" src="{% if video.thumbnail %}{{ video.thumbnail.url }}{% endif %}" alt=""><br>
                 </a>
             {% endfor %}
         </li>
@@ -58,7 +61,7 @@
 
 
 
-
+    <hr>
     <ul>
         <h2>관련 YouTube 영상</h2>
         <li>
@@ -66,7 +69,7 @@
                 제목: ({{ video_info_dict.title }})<br>
 {#                동영상링크: <a href="https://www.youtube.com/watch?v={{ video_info_dict.video_id }}">#}
 {#                https://www.youtube.com/watch?v={{ video_info_dict.video_id }}</a><br>#}
-                <a href="https://www.youtube.com/watch?v={{ video_info_dict.video_id }}" target="_blank">
+                <a href="https://youtu.be/{{ video_info_dict.video_id }}" target="_blank">
                 <img class="cover" src="{{ video_info_dict.thumbnails }}" alt=""><br>
                 </a>
 

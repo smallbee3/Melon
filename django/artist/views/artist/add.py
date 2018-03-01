@@ -51,7 +51,6 @@ __all__ = (
 # def artist_add(request):
 #     if request.method == 'POST':
 #
-#         # return HttpResponse(name)
 #         name = request.POST['name']
 #         real_name = request.POST['real_name']
 #         nationality = request.POST['nationality']

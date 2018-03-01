@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% if result == 1 %}
+        <h2>SMS was sent successfully.</h2>
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <div>수신자: <input type="text" name="phone_number1"></div>
+        <div>발신자: <input type="text" name="phone_number2" value="01012341234"></div>
+        <div>내용 <input type="text" name="text"></div>
+        <button type="submit">sms 전송</button>
+    </form>
+
+
+{% endblock %}

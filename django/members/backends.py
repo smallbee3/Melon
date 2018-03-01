@@ -52,11 +52,12 @@ class FacebookBackend:
     # 바로 아래처럼 facebook_id를 인자로 받는 것으로 작성했다가,
     # 1. 다시 생각해보니 아직 인증되지 않은 유저의 경우
     #   facebook_id가 존재하지 않음.
+
+    # def authenticate(self, request, facebook_id):
+
     # 2. code부터 작업하면 좀 더 많은 내용을 담을 수 있음.
     #    code를 페이스북에 보내서 우리회원인지 확인할 수도 있고
     #    회원아닌경우 get parameter로 전달된 값들로 가입시킬 수도 있음.
-
-    # def authenticate(self, request, facebook_id):
 
     def authenticate(self, request, code):
         def get_access_token(auth_code):
@@ -137,7 +138,7 @@ class FacebookBackend:
             if not user.img_profile:
                 temp_file = download(url_picture)
                 ext = get_buffer_ext(temp_file)
-                user.img_profile.save(f'{user.pk}.{ext}', File(temp_file))
+                user.img_profile.save(f'{user.pk}-{user.first_name}{user.last_name}.{ext}', File(temp_file))
             return user
 
             # binary_data = request.get(url_picture)

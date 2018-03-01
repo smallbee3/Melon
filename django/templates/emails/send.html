@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% if result == 1 %}
+        <h2>Email was sent successfully.</h2>
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for field in emails_form %}
+            <div>
+                <lable for="field.id_for_label">{{ field.label }}</lable>
+                {{ field }}
+            </div>
+        {% endfor %}
+        <button type="submit">Send</button>
+    </form>
+
+{% endblock %}
