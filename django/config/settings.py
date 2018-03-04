@@ -80,7 +80,9 @@ SMS_API_SECRET = secrets_base['SMS_API_SECRET']
 DEBUG = True
 # DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '.amazonaws.com',
+]
 # ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = ['localhost']
 
