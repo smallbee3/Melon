@@ -36,7 +36,6 @@ STATIC_URL = '/static/'
 # STATIC_URL = '/asdf/' -> 바꿀 수 있음.
 # -> 우선순위가 url.config보다 더 우선시 되는 것 같음.
 
-
 # 'django/static' 폴더
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
@@ -44,6 +43,8 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     STATIC_DIR
 ]
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
+
 
                         # SECRET #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
