@@ -130,6 +130,7 @@ INSTALLED_APPS = [
 
     # Thirdparty App
     'django_extensions',
+    'raven.contrib.django.raven_compat',
 
 
     # Custom App
@@ -227,3 +228,64 @@ USE_L10N = True
 USE_TZ = True
 
 
+import os
+import raven
+
+RAVEN_CONFIG = {
+    'dsn': 'https://844d67919ebf49599e6525bee02651da:a60c7dbeac694aaa886cda13ca4dadec@sentry.io/298730',
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
+}
+
+
+# Google에서 django sentry log 검색 후 처음 문서
+# https://docs.sentry.io/clients/python/integrations/django/
+
+# (* Google에서 django sentry로 검색 후 나오는 처음 문서와 이유는 모르나
+#   처음 부분에 내용이 조금 다름)
+#   https://raven.readthedocs.io/en/stable/integrations/django.html
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'sentry': {
+            'level': 'ERROR', # To capture more than ERROR, change to WARNING, INFO, etc.
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'tags': {'custom-tag': 'x'},
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
+}
