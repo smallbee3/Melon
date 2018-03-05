@@ -26,7 +26,6 @@ User = get_user_model()
 # 사용자가 가져온 이 값을 장고에서 토스 받아서
 
 
-
 def facebook_login(request):
     # GET parameter가 왔을 것으로 가정
     code = request.GET.get('code')
@@ -46,7 +45,9 @@ def facebook_login_backup(request):
     # 이 값과 client_id, secret을 사용해서 Facebook서버에서 access_token을 받아와야 함
     code = request.GET['code']
     # 이전에 페이스북 로그인 버튼을 눌렀을 때 'code'를 다시 전달받은 redirect_uri값을 그대로 사용
-    redirect_uri = 'http://localhost:8000/facebook-login/'
+    # redirect_uri = 'http://localhost:8000/facebook-login/'
+    redirect_uri = 'http://melon.dlighter.com/facebook-login/'
+
 
     # 아래 엔드포인트에 GET요청을 보냄
     url = 'https://graph.facebook.com/v2.12/oauth/access_token'

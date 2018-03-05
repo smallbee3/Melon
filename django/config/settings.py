@@ -20,33 +20,35 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 
-# Static
-# User-uploaded file들이 저장될 위치
-MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
-MEDIA_URL = '/media/'
-
-
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.0/howto/static-files/
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
+STATIC_URL = '/static/'
+# STATIC_URL = '/asdf/' -> 바꿀 수 있음.
+# -> 우선순위가 url.config보다 더 우선시 되는 것 같음.
 
 # 만약 요청의 URL이 /static/으로 시작할 경우,
 # STATICFILES_DIRS에 정의된 경로 목록에서
 # /static/<path>/
 #         <path> 부분에 정의된 경로에 해당하는
 # 파일을 찾아 돌려준다.
-STATIC_URL = '/static/'
-# STATIC_URL = '/asdf/' -> 바꿀 수 있음.
-# -> 우선순위가 url.config보다 더 우선시 되는 것 같음.
+
+
+# Media (User-uploaded files)
+# ec2-deploy/.media
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+MEDIA_URL = '/media/'
+
 
 # 'django/static' 폴더
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-
 # Django에서 정적파일을 검색할 경로 목록
 STATICFILES_DIRS = [
     STATIC_DIR
 ]
-STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
 
-                        # SECRET #
+# SECRET #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 SECRETS_BASE = os.path.join(SECRETS_DIR, 'base.json')
@@ -82,7 +84,9 @@ DEBUG = True
 # DEBUG = False
 
 ALLOWED_HOSTS = [
+    'localhost',
     '.amazonaws.com',
+    '.dlighter.com',
 ]
 # ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = ['localhost']
@@ -112,7 +116,6 @@ EMAIL_HOST_USER = secrets_base['EMAIL_HOST_USER']
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = secrets_base['DEFAULT_FROM_EMAIL']
-
 
 
 # Application definition
@@ -177,15 +180,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fc-melon',
-        'USER': 'smallbee3',
-        'PASSWORD': 'asdf',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
+        # 'NAME': 'fc-melon',
+        # 'USER': 'smallbee3',
+        # 'PASSWORD': 'asdfqwer',
     }
 }
 
@@ -222,9 +225,5 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 
